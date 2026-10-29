@@ -141,8 +141,8 @@ p{margin:0 0 14px}
 .board{position:relative;z-index:4;margin:14px 0 0;background:linear-gradient(180deg,#152821,#0f1f19);border:1.5px solid var(--brass);border-radius:16px;
   padding:12px 14px 12px;box-shadow:0 30px 60px -30px rgba(0,0,0,.8), inset 0 0 40px rgba(0,0,0,.35)}
 .board header{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px dashed rgba(200,155,74,.4);padding-bottom:7px;margin-bottom:6px}
-.board .kicker{color:var(--gold);font-size:11px}
-.board .count{display:block;font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums;margin-top:2px}
+.board .kicker{display:block;color:var(--gold);font-size:19px;font-weight:800;line-height:1.2;letter-spacing:.05em}
+.board .count{display:block;font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums;margin-top:6px}
 .board ol{list-style:none;margin:0;padding:0;min-height:176px}
 .board li{display:flex;gap:10px;align-items:baseline;padding:3px 0;font-family:var(--chalk);font-size:22px;line-height:1.1;color:var(--cream);
   animation:chalkin .6s cubic-bezier(.2,.8,.2,1) both}
@@ -220,7 +220,7 @@ p{margin:0 0 14px}
 .beats .phone img{border-radius:20px 20px 0 0}
 .beats .pc h3{font-size:clamp(25px,6.4vw,32px)}
 @media (min-width:860px){
-  .postcards{grid-template-columns:repeat(3,minmax(0,1fr));gap:30px;align-items:stretch}
+  .postcards{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px;align-items:stretch;max-width:860px;margin:0 auto}
   .beats .pc,.beats .pc.flip{grid-template-rows:1fr auto}
   .beats .pc .phones{align-self:end}
   .beats .pc,.beats .pc.flip{grid-template-columns:1fr;gap:10px;padding:24px 22px 0;text-align:center}
@@ -349,16 +349,12 @@ footer nav a{min-height:44px;display:inline-flex;align-items:center}
   <div class="wrap">
     <div class="postcards">
       <article class="pc rv" style="--rr:-2deg">
-        <div class="phones"><div class="phone"><img src="img/tonight.webp" width="640" height="724" loading="lazy" alt="The Tonight screen: a live board showing who is out and what each mate is drinking."></div></div>
-        <div class="pc-text"><h3>See who's out, live.</h3></div>
+        <div class="phones"><div class="phone"><img src="img/tonight.webp" width="640" height="724" loading="lazy" alt="The Tonight screen: a live board showing each mate's drinks tonight, so you can see who is drinking the most."></div></div>
+        <div class="pc-text"><h3>Log your drinks and see who drinks the most.</h3></div>
       </article>
       <article class="pc flip rv" style="--rr:2deg">
-        <div class="phones"><div class="phone"><img src="img/memories.webp" width="640" height="709" loading="lazy" alt="Memories: a taped-in polaroid of a night out with the whole gang."></div></div>
-        <div class="pc-text"><h3>Find out who's always last out.</h3></div>
-      </article>
-      <article class="pc rv" style="--rr:-1.5deg">
         <div class="phones"><div class="phone"><img src="img/passport.webp" width="640" height="700" loading="lazy" alt="The Passport screen: a stamp for each country and the drink had there."></div></div>
-        <div class="pc-text"><h3>Collect the caps and corks from everywhere you've been.</h3></div>
+        <div class="pc-text"><h3>Collect all the caps and bottles you have ever drunk and race around the world.</h3></div>
       </article>
     </div>
   </div>
