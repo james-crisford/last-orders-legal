@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Last Orders - join the waiting list</title>
+<meta name="description" content="Share a drink with your mates, no matter where they are in the world. Join the Last Orders waiting list.">
+<meta name="theme-color" content="#122A23">
+<script>document.documentElement.classList.add('js');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,600;1,9..144,800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#16322A; --deep:#122A23; --panel:#1D2B26; --card:#243B33;
+  --amber:#E8A13C; --brass:#C89B4A; --cream:#F3E9D2; --dim:#9DB5A9;
+  --ink:#14251F; --gold:#E7C86A; --night:#0c1c17; --err:#F2A88E;
+  --sam:#E7C86A; --mads:#F2A88E; --ollie:#8FD3B0; --aaron:#A9C8F5;
+  --display:"Fraunces", Georgia, "Times New Roman", serif;
+  --body:"Work Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --chalk:"Caveat", "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--night);color:var(--cream);font-family:var(--body);font-size:16px;line-height:1.45;overflow-x:hidden}
+img{max-width:100%}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:8px}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- layout ---------- */
+.layout{display:grid;grid-template-columns:minmax(0,1fr)}
+main.phone{min-width:0;position:relative;background:var(--deep);
+  background-image:
+    radial-gradient(circle at 20px 20px, transparent 0 7px, rgba(200,155,74,.07) 7.5px 8.5px, transparent 9px),
+    radial-gradient(circle at 70px 66px, rgba(243,233,210,.03) 0 2px, transparent 2.5px);
+  background-size:96px 96px}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 28px;border:0;border-radius:999px;background:var(--amber);color:var(--ink);font:inherit;font-size:19px;font-weight:700;text-decoration:none;cursor:pointer;box-shadow:0 4px 0 #9b6a22;transition:transform .12s,box-shadow .12s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #9b6a22}
+.btn[disabled]{opacity:.7;cursor:progress}
+.ghost{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border:1.5px solid rgba(243,233,210,.4);border-radius:999px;background:transparent;color:var(--cream);font:inherit;font-size:15px;font-weight:600;text-decoration:none;cursor:pointer}
+.ghost:hover{border-color:var(--gold);color:var(--gold)}
+.ghost svg{width:18px;height:18px;flex:none}
+
+/* ---------- hero / intro ---------- */
+.intro{position:relative;padding:22px 16px 26px;overflow:hidden;
+  background:
+   radial-gradient(60% 50% at 85% 12%, rgba(232,161,60,.30), transparent 70%),
+   radial-gradient(40% 40% at 10% 80%, rgba(200,155,74,.16), transparent 70%),
+   linear-gradient(180deg,#183a30,#122A23)}
+.intro::after{content:"";position:absolute;inset:auto -10% -1px -10%;height:40px;background:linear-gradient(180deg,transparent,rgba(12,28,23,.35))}
+.wm{display:flex;align-items:center;gap:10px;min-height:44px;font-family:var(--display);font-style:italic;font-weight:800;font-size:26px;letter-spacing:-.01em;color:var(--cream);text-decoration:none}
+.wm img{width:34px;height:34px;border-radius:9px;box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.hero-body{margin-top:30px}
+h1{font-family:var(--display);font-style:italic;font-weight:600;font-size:clamp(34px,9.8vw,66px);line-height:1;letter-spacing:-.02em;margin:0 0 22px;font-variation-settings:"opsz" 144}
+h1 .hi{color:var(--amber)}
+.ctas{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;position:relative;z-index:1}
+.sub{font-size:14px;color:var(--dim)}
+
+/* ---------- lock screen hero card ---------- */
+.lock{position:relative;padding:34px 16px 34px;text-align:center;overflow:hidden;
+  background:
+   radial-gradient(18px 18px at 18% 30%, rgba(232,161,60,.55), transparent),
+   radial-gradient(30px 30px at 78% 22%, rgba(231,200,106,.35), transparent),
+   radial-gradient(22px 22px at 64% 70%, rgba(232,161,60,.4), transparent),
+   radial-gradient(40px 40px at 30% 84%, rgba(200,155,74,.28), transparent),
+   radial-gradient(80% 60% at 50% 30%, #2b4f42, transparent 75%),
+   linear-gradient(180deg,#1b3b31,#0f231d)}
+.lock .lt{font-family:var(--display);font-weight:300;font-size:88px;line-height:1;letter-spacing:-.03em;margin:2px 0 22px;font-variation-settings:"opsz" 144}
+.stack{display:flex;flex-direction:column;gap:8px;max-width:400px;margin:0 auto;text-align:left}
+.ln{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:start;padding:10px 12px;border-radius:18px;background:rgba(18,34,29,.72);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(243,233,210,.10);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.ln .ic{width:38px;height:38px;border-radius:10px;background:linear-gradient(160deg,var(--brass),#8f6a2c);display:grid;place-items:center}
+.ln .hd{font-size:13px}
+.ln .hd b{font-weight:700}
+.ln p{margin:1px 0 0;font-size:15px;line-height:1.3}
+.js .lock .ln{opacity:0;transform:translateY(-14px) scale(.96);animation:drop .55s cubic-bezier(.2,1.4,.4,1) forwards}
+.js .lock .ln:nth-child(1){animation-delay:.5s}.js .lock .ln:nth-child(2){animation-delay:1.3s}
+@keyframes drop{to{opacity:1;transform:none}}
+
+/* ---------- chat bar ---------- */
+.bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:8px 12px 8px 12px;background:rgba(16,36,30,.92);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid rgba(200,155,74,.22)}
+.bar .back{color:var(--amber);flex:none}
+.faces{display:flex;flex:none;flex:1}
+.faces .av{width:30px;height:30px;font-size:12px;border:2px solid #10241e;margin-left:-9px}
+.faces .av:first-child{margin-left:0}
+.pill{flex:none;background:var(--amber);color:var(--ink);font-weight:700;font-size:14px;text-decoration:none;padding:0 16px;border-radius:999px;min-height:44px;display:inline-flex;align-items:center;transition:opacity .2s}
+.bar.at-join .pill{opacity:0;pointer-events:none;visibility:hidden}
+
+/* ---------- thread ---------- */
+.thread{display:flex;flex-direction:column;gap:3px;padding:14px 12px 28px;position:relative}
+.m{display:flex;align-items:flex-end;gap:8px;max-width:88%;position:relative}
+.m.them{align-self:flex-start}
+.m:not(.cont){margin-top:10px}
+.av{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:700;font-size:13px;color:var(--ink)}
+.av::before{content:attr(data-i)}
+.sam .av,.av.sam{background:var(--sam)} .mads .av,.av.mads{background:var(--mads)} .ollie .av,.av.ollie{background:var(--ollie)} .aaron .av,.av.aaron{background:var(--aaron)}
+.b{position:relative;background:var(--card);color:var(--cream);border-radius:18px 18px 18px 6px;padding:7px 12px 7px;min-width:64px;box-shadow:0 1px 0 rgba(0,0,0,.25)}
+.b p{margin:0;font-size:16px;line-height:1.35;overflow-wrap:anywhere}
+.rx{position:absolute;bottom:-13px;left:10px;display:inline-flex;gap:3px;align-items:center;background:var(--panel);border:2px solid var(--deep);border-radius:12px;font-size:13px;line-height:1;padding:3px 6px;color:var(--cream);white-space:nowrap}
+.m.has-rx{margin-bottom:14px}
+.b.pic{padding:4px 4px 6px}
+.b.pic p{padding:6px 8px 0}
+.shot{display:block;width:250px;max-width:100%;padding:0;margin:0;border:0;background:#0d1f19;border-radius:14px;overflow:hidden;cursor:zoom-in;position:relative}
+.shot img{display:block;width:100%;height:auto}
+
+/* typing dots */
+.dots{display:none;position:absolute;left:38px;bottom:0;background:var(--card);border-radius:18px 18px 18px 6px;padding:13px 14px;gap:5px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--dim);animation:dot 1s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{transform:none;opacity:.5}30%{transform:translateY(-4px);opacity:1}}
+
+/* reveal states (JS only) */
+.js .rv{opacity:0;transform:translateY(16px) scale(.97);transition:opacity .35s ease,transform .45s cubic-bezier(.2,1.3,.4,1)}
+.js .m.them.rv{transform-origin:0 100%}
+.js .rv.typing{opacity:1;transform:none}
+.js .rv.typing .b{visibility:hidden}
+.js .rv.typing .dots{display:flex}
+.js .rv.shown{opacity:1;transform:none}
+.js .rv .rx{transform:scale(0);transition:transform .35s cubic-bezier(.2,1.6,.4,1) .45s}
+.js .rv.shown .rx{transform:scale(1)}
+.rx.pop{animation:rxpop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes rxpop{from{transform:scale(0)}}
+
+/* ---------- overnight lock screen ---------- */
+.night{position:relative;height:190vh;margin:18px -12px 8px;--p:0}
+.lockscr{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;z-index:30;display:flex;flex-direction:column;align-items:center;padding:12vh 16px 20px;text-align:center}
+.lockscr .ln{padding:8px 12px}
+.lockscr .ln p{font-size:14px}
+.sky{position:absolute;inset:0;z-index:-1}
+.sky-n{background:radial-gradient(1.5px 1.5px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 32% 8%,#fff,transparent),radial-gradient(1.5px 1.5px at 72% 14%,#fff,transparent),radial-gradient(1px 1px at 86% 34%,#fff,transparent),radial-gradient(1px 1px at 48% 26%,#fff,transparent),radial-gradient(1px 1px at 22% 42%,#fff,transparent),linear-gradient(180deg,#07130f,#10261f 70%,#16322A)}
+.sky-m{opacity:var(--m,0);background:radial-gradient(70% 45% at 50% 108%,#F3C77A 0%,#E8A13C 30%,rgba(200,155,74,.0) 70%),linear-gradient(180deg,#1d3b31 0%,#355446 55%,#7d6a42 100%)}
+.mode{font-size:20px;line-height:1;padding:7px 14px;border-radius:999px;background:rgba(243,233,210,.12);margin-bottom:10px}
+.lockscr .lt{font-family:var(--display);font-weight:300;font-size:min(26vw,104px);line-height:1;letter-spacing:-.03em;margin:0 0 18px;font-variant-numeric:tabular-nums;font-variation-settings:"opsz" 144}
+.lockscr .stack{width:100%;max-width:400px;flex-direction:column-reverse}
+.lockscr .ln{transition:opacity .35s,transform .45s cubic-bezier(.2,1.3,.4,1)}
+.js .lockscr .ln{opacity:0;transform:translateY(-12px) scale(.95);display:none}
+.js .lockscr .ln.on{display:grid}
+.js .lockscr .ln.vis{opacity:1;transform:none}
+
+/* ---------- waiting list ---------- */
+.join{margin:22px 12px 26px;padding:22px 18px 18px;border-radius:24px;background:radial-gradient(90% 80% at 100% 0%,rgba(232,161,60,.25),transparent 60%),var(--panel);border:1px solid rgba(200,155,74,.35);scroll-margin-top:76px}
+.fld{margin:0 0 14px}
+.fld label{display:block;font-size:14px;font-weight:600;margin:0 0 6px;color:var(--cream)}
+.fld input{display:block;width:100%;min-height:52px;padding:0 16px;border-radius:14px;background:var(--deep);border:1.5px solid rgba(157,181,169,.45);color:var(--cream);font:inherit;font-size:16px}
+.fld input[aria-invalid="true"]{border-color:var(--err)}
+.fld .err{margin:6px 2px 0;font-size:14px;color:var(--err)}
+.fld .err:empty{display:none}
+.hp{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+.join .btn{width:100%;margin-top:6px}
+.consent{margin:12px 0 0;font-size:14px;color:var(--dim);line-height:1.4}
+.consent a{color:var(--gold);display:inline-block;padding:13px 6px;margin:-13px 0 -13px 2px;text-underline-offset:3px}
+.status{margin:6px 0 0;font-size:17px;font-weight:600;color:var(--cream)}
+.status:empty{display:none}
+.status.bad{color:var(--err)}
+.thanks{margin-top:10px}
+.thanks .tell{margin:0 0 10px;font-size:17px;font-weight:600}
+.sharebox{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.sharebox[hidden]{display:none}
+.sh-msg{font-size:14px;color:var(--gold);min-height:1em}
+.sh-msg:empty{display:none}
+
+/* ---------- lightbox ---------- */
+dialog.lb{border:0;padding:0;background:transparent;max-width:min(92vw,430px);max-height:92vh;overflow:visible}
+dialog.lb::backdrop{background:rgba(6,14,11,.86)}
+dialog.lb img{display:block;width:100%;max-height:86vh;object-fit:contain;border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.6);background:var(--deep)}
+dialog.lb button{position:absolute;top:-14px;right:-10px;width:44px;height:44px;border-radius:50%;border:0;background:var(--cream);color:var(--ink);font-size:22px;font-weight:700;cursor:pointer}
+dialog.lb p{color:var(--dim);font-size:13px;text-align:center;margin:10px 0 0}
+
+/* ---------- footer ---------- */
+footer{background:#0a1813;border-top:1px solid rgba(200,155,74,.2);padding:26px 16px 36px;text-align:center;color:var(--dim);font-size:14px}
+footer .sharebox{justify-content:center;margin-bottom:6px}
+footer .ghost{font-size:14px}
+footer nav{display:flex;flex-wrap:wrap;justify-content:center;gap:0 6px;margin:6px 0}
+footer nav a{color:var(--cream);text-underline-offset:3px;padding:12px 12px;min-height:44px;display:inline-flex;align-items:center}
+footer p{margin:6px 0}
+
+/* ---------- desktop ---------- */
+@media (min-width:1000px){
+  .layout{grid-template-columns:minmax(380px,1fr) 560px minmax(170px,.5fr)}
+  .intro{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:40px clamp(32px,4vw,72px) 36px;background:
+   radial-gradient(50% 45% at 80% 10%, rgba(232,161,60,.22), transparent 70%),
+   radial-gradient(40% 40% at 0% 100%, rgba(200,155,74,.12), transparent 70%), transparent}
+  .intro::after{display:none}
+  .hero-body{margin:auto 0}
+  h1{font-size:clamp(40px,3.7vw,60px)}
+  main.phone{border-left:1px solid rgba(200,155,74,.22);border-right:1px solid rgba(200,155,74,.22);box-shadow:0 0 120px rgba(0,0,0,.45)}
+  .thread{padding:14px 20px 30px}
+  .night{margin:18px -20px 8px}
+  .shot{width:290px}
+  .lock{padding-top:56px}
+}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .js .rv{opacity:1!important;transform:none!important}
+  .js .rv .rx{transform:none!important;opacity:1!important}
+  .js .lock .ln{opacity:1;transform:none}
+  .night{height:auto}
+  .lockscr{position:relative;height:auto;padding:40px 16px}
+  .js .lockscr .ln{display:grid;opacity:1;transform:none}
+  .sky-m{--m:.85}
+}
+</style>
+</head>
+<body>
+<!-- Privacy: no trackers, no analytics. The waiting-list form posts only to WAITLIST.url (set in the script below); while that is empty nothing is sent anywhere. -->
+<div class="layout">
+
+  <!-- ===== HERO ===== -->
+  <header class="intro" id="top">
+    <a class="wm" href="#top"><img src="img/icon.webp" alt="" width="34" height="34">Last Orders</a>
+    <div class="hero-body">
+      <h1>Share a drink with your mates, <span class="hi">no matter where they are in the world.</span></h1>
+      <div class="ctas">
+        <a class="btn" href="#join">Join the waiting list</a>
+        <span class="sub">iPhone - 18+</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== THE CHAT ===== -->
+  <main class="phone" id="chat">
+
+    <section class="lock" aria-label="A phone lock screen with two new messages">
+      <div class="lt" aria-hidden="true">16:40</div>
+      <div class="stack">
+        <div class="ln"><span class="ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="#14251F"><path d="M4 5h16a1 1 0 011 1v10a1 1 0 01-1 1H9l-4 3v-3H4a1 1 0 01-1-1V6a1 1 0 011-1z"/></svg></span><div><div class="hd"><b>Sam</b></div><p>Pub tonight?</p></div></div>
+        <div class="ln"><span class="ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="#14251F"><path d="M4 5h16a1 1 0 011 1v10a1 1 0 01-1 1H9l-4 3v-3H4a1 1 0 01-1-1V6a1 1 0 011-1z"/></svg></span><div><div class="hd"><b>Aaron</b></div><p>Still in Lisbon 😩</p></div></div>
+      </div>
+    </section>
+
+    <div class="bar" id="bar">
+      <svg class="back" width="12" height="20" viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2L2 10l8 8"/></svg>
+      <div class="faces" aria-hidden="true"><span class="av sam" data-i="S"></span><span class="av mads" data-i="M"></span><span class="av ollie" data-i="O"></span><span class="av aaron" data-i="A"></span></div>
+      <a class="pill" href="#join">Join the waiting list</a>
+    </div>
+
+    <div class="thread" id="thread" role="log" aria-label="A group chat">
+      <div class="m them sam rv"><span class="av" data-i="S" aria-hidden="true"></span><div class="b pic">
+        <button class="shot" type="button" data-full="img/tonight-lg.webp" aria-label="Open the Tonight board screenshot full size"><img src="img/tonight.webp" width="600" height="674" alt="The Tonight board in Last Orders. Sam, Ched (you), Ollie, Mads and Aaron are on it, each showing what they're having."></button>
+        <p>Everyone's drink, live.</p></div></div>
+      <div class="m them aaron rv has-rx"><span class="av" data-i="A" aria-hidden="true"></span><div class="b pic">
+        <button class="shot" type="button" data-full="img/world.webp" aria-label="Open the World screenshot full size"><img src="img/world.webp" width="600" height="637" loading="lazy" alt="The World screen in Last Orders: a globe with the countries the group has shared a drink in lit amber, including the UK, Ireland, France, Germany, Spain and Portugal."></button>
+        <p>Lisbon's lit up.</p><span class="rx" aria-label="Reaction: heart">❤️</span></div></div>
+
+      <!-- overnight: the phone locks, time runs on with scroll -->
+      <section class="night" aria-label="Overnight on the lock screen">
+        <div class="lockscr">
+          <div class="sky sky-n" aria-hidden="true"></div>
+          <div class="sky sky-m" aria-hidden="true"></div>
+          <div class="mode" id="nmode" aria-hidden="true">🌙</div>
+          <div class="lt" id="nclock" aria-hidden="true">23:41</div>
+          <div class="stack" id="nstack">
+            <div class="ln" data-min="1421"><span class="ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="#14251F"><path d="M4 5h16a1 1 0 011 1v10a1 1 0 01-1 1H9l-4 3v-3H4a1 1 0 01-1-1V6a1 1 0 011-1z"/></svg></span><div><div class="hd"><b>Aaron</b></div><p>Felt like I was there.</p></div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== WAITING LIST ===== -->
+    <section class="join" id="join" aria-label="Waiting list">
+      <form id="wl" novalidate>
+        <div class="fld">
+          <label for="wl-name">Name</label>
+          <input id="wl-name" name="name" type="text" autocomplete="name" required minlength="2" maxlength="80" aria-describedby="wl-name-err">
+          <p class="err" id="wl-name-err" role="alert"></p>
+        </div>
+        <div class="fld">
+          <label for="wl-phone">Mobile number</label>
+          <input id="wl-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="24" aria-describedby="wl-phone-err">
+          <p class="err" id="wl-phone-err" role="alert"></p>
+        </div>
+        <div class="hp" aria-hidden="true"><input type="text" name="hp_field" id="wl-hp" tabindex="-1" autocomplete="off"></div>
+        <button class="btn" type="submit" id="wl-btn">Join</button>
+        <p class="consent">We will text you once, when Last Orders is ready. Nothing else. <a href="https://james-crisford.github.io/last-orders-legal/privacy-policy.html">Privacy</a></p>
+        <p class="status" id="wl-status" role="status" aria-live="polite"></p>
+      </form>
+      <div class="thanks" id="wl-thanks" hidden>
+        <p class="tell" id="wl-tell" hidden>Now tell your mates.</p>
+        <div class="sharebox" data-share>
+          <button class="ghost js-share" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6"/></svg>Tell your mates</button>
+          <a class="ghost js-wa" href="https://wa.me/" target="_blank" rel="noopener">WhatsApp</a>
+          <span class="sh-msg" role="status" aria-live="polite"></span>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div class="gutter" aria-hidden="true"></div>
+</div>
+
+<footer>
+  <div class="sharebox" data-share>
+    <button class="ghost js-share" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6"/></svg>Tell your mates</button>
+    <a class="ghost js-wa" href="https://wa.me/" target="_blank" rel="noopener">WhatsApp</a>
+    <span class="sh-msg" role="status" aria-live="polite"></span>
+  </div>
+  <nav aria-label="Legal and support">
+    <a href="https://james-crisford.github.io/last-orders-legal/privacy-policy.html">Privacy</a>
+    <a href="https://james-crisford.github.io/last-orders-legal/support.html">Support</a>
+  </nav>
+  <p>Demo chat. Drink responsibly.</p>
+</footer>
+
+<dialog class="lb" id="lb" aria-label="Screenshot">
+  <button type="button" id="lbclose" aria-label="Close">×</button>
+  <img id="lbimg" alt="">
+  <p>Real screen from the app. Demo mates.</p>
+</dialog>
+
+<script>
+/* ===================== CONFIG (edit these) =====================
+   WAITLIST: where the form sends the lead. While url is empty NOTHING is sent
+   and the page says "Preview only: nothing is saved yet."
+   SHARE: what the "Tell your mates" button shares. */
+const WAITLIST = { url: '', method: 'POST', nameField: 'name', phoneField: 'phone', extra: {} };
+const SHARE = { url: 'https://james-crisford.github.io/last-orders-legal/go/?s=friend', text: 'Share a drink with your mates, no matter where they are in the world. Last Orders:' };
+/* ================================================================ */
+
+/* Sends one lead. Resolves {preview:true} (and sends nothing) when WAITLIST.url is empty;
+   resolves normally on success (an opaque no-cors response counts); rejects on network or HTTP error. */
+function submitLead(name, phone){
+  if(!WAITLIST.url) return Promise.resolve({preview:true});
+  var body = new URLSearchParams();
+  body.set(WAITLIST.nameField, name);
+  body.set(WAITLIST.phoneField, phone);
+  Object.keys(WAITLIST.extra || {}).forEach(function(k){ body.set(k, WAITLIST.extra[k]); });
+  var method = (WAITLIST.method || 'POST').toUpperCase();
+  var opts = { method: method, mode: 'no-cors' };
+  var url = WAITLIST.url;
+  if(method === 'GET' || method === 'HEAD'){ url += (url.indexOf('?') > -1 ? '&' : '?') + body.toString(); }
+  else { opts.headers = {'Content-Type':'application/x-www-form-urlencoded'}; opts.body = body.toString(); }
+  return fetch(url, opts).then(function(res){
+    if(res.type !== 'opaque' && !res.ok) throw new Error('HTTP ' + res.status);
+    return {preview:false};
+  });
+}
+
+(function(){
+  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var thread = document.getElementById('thread');
+  function wait(ms){ return new Promise(function(r){ setTimeout(r, RM ? 0 : ms); }); }
+
+  /* typing dots for every mate bubble */
+  function addDots(m){ if(m.querySelector('.dots')) return; var d=document.createElement('span'); d.className='dots'; d.setAttribute('aria-hidden','true'); d.innerHTML='<i></i><i></i><i></i>'; var b=m.querySelector('.b'); m.insertBefore(d,b); }
+  document.querySelectorAll('.m.them').forEach(addDots);
+
+  /* ---------- scroll reveal queue ---------- */
+  var q=[], busy=false;
+  async function show(m){
+    var backlog = q.length;
+    if(m.classList.contains('them') && backlog < 2 && !RM){
+      m.classList.add('typing');
+      await wait(m.querySelector('.pic') ? 800 : 500);
+      m.classList.remove('typing');
+    }
+    m.classList.add('shown');
+    await wait(backlog > 2 ? 30 : 140);
+  }
+  async function run(){ if(busy) return; busy=true; while(q.length){ var m=q.shift(); await show(m); } busy=false; }
+  function enqueue(m){ if(m.classList.contains('shown')||q.indexOf(m)>-1) return; q.push(m); q.sort(function(a,b){ return a.compareDocumentPosition(b) & 4 ? -1 : 1; }); run(); }
+  var rvs = document.querySelectorAll('.rv');
+  if(RM || !('IntersectionObserver' in window)){
+    rvs.forEach(function(m){ m.classList.add('shown'); });
+    if(RM){ var c0=document.getElementById('nclock'); if(c0) c0.textContent='09:12'; var m0=document.getElementById('nmode'); if(m0) m0.textContent='☀️'; }
+  } else {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ io.unobserve(e.target); enqueue(e.target); } });
+    }, {rootMargin:'0px 0px -10% 0px'});
+    rvs.forEach(function(m){ io.observe(m); });
+  }
+
+  /* tap a mate's bubble to react */
+  thread.addEventListener('click', function(e){
+    var b=e.target.closest('.m.them .b'); if(!b || e.target.closest('a,button')) return;
+    var m=b.parentNode; if(m.dataset.liked) return; m.dataset.liked='1';
+    var r=b.querySelector('.rx');
+    if(r){ r.classList.remove('pop'); void r.offsetWidth; r.classList.add('pop'); }
+    else { r=document.createElement('span'); r.className='rx pop'; r.textContent='❤️'; r.setAttribute('aria-label','Reaction: heart'); b.appendChild(r); m.classList.add('has-rx'); }
+  });
+
+  /* ---------- overnight lock screen scrubbed by scroll ---------- */
+  var night=document.querySelector('.night');
+  if(night && !RM){
+    var clk=document.getElementById('nclock'), mode=document.getElementById('nmode'), skyM=night.querySelector(".sky-m");
+    var notes=[].slice.call(night.querySelectorAll('.ln'));
+    var S=23*60+41, E=24*60+9*60+12, ticking=false;
+    /* piecewise clock: the first 42% of the scroll is the last half hour of the night,
+       then the hours of sleep race by, landing on 09:12 at 84% */
+    var M1=24*60+15;
+    function minsAt(p){
+      if(p<.42) return S+(M1-S)*(p/.42);
+      return M1+(E-M1)*Math.min(1,(p-.42)/.42);
+    }
+    function upd(){
+      ticking=false;
+      var r=night.getBoundingClientRect(), tot=r.height-innerHeight;
+      if(r.bottom<0||r.top>innerHeight) return;
+      var p=Math.min(1,Math.max(0,-r.top/tot));
+      var mins=Math.round(minsAt(p)), mm=mins%1440;
+      clk.textContent=('0'+Math.floor(mm/60)).slice(-2)+':'+('0'+(mm%60)).slice(-2);
+      mode.textContent = mins>=1440+6*60 ? '☀️' : '🌙';
+      skyM.style.setProperty('--m', Math.max(0,Math.min(1,(p-.62)/.24)).toFixed(3));
+      notes.forEach(function(n){
+        var on = mins >= +n.dataset.min && p > .02;
+        if(on && !n.classList.contains('on')){ n.classList.add('on'); requestAnimationFrame(function(){ requestAnimationFrame(function(){ n.classList.add('vis'); }); }); }
+        if(!on && n.classList.contains('on')){ n.classList.remove('on','vis'); }
+      });
+    }
+    addEventListener('scroll', function(){ if(!ticking){ ticking=true; requestAnimationFrame(upd); } }, {passive:true});
+    addEventListener('resize', upd); upd();
+  }
+
+  /* ---------- sticky button hides once the form is on screen ---------- */
+  var joinEl=document.getElementById('join'), bar=document.getElementById('bar');
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){ bar.classList.toggle('at-join', es[0].isIntersecting); }, {threshold:.15}).observe(joinEl);
+  }
+
+  /* ---------- lightbox ---------- */
+  var lb=document.getElementById('lb'), lbi=document.getElementById('lbimg');
+  document.querySelectorAll('.shot').forEach(function(s){
+    s.addEventListener('click', function(){
+      lbi.src=s.dataset.full;
+      var im=s.querySelector('img[alt]:not([alt=""])');
+      lbi.alt = im ? im.alt : 'App screenshot';
+      if(lb.showModal) lb.showModal(); else window.open(s.dataset.full);
+    });
+  });
+  document.getElementById('lbclose').addEventListener('click', function(){ lb.close(); });
+  lb.addEventListener('click', function(e){ if(e.target===lb) lb.close(); });
+
+  /* ---------- share: "Tell your mates" (never claims anything was sent) ---------- */
+  var FULL = SHARE.text + ' ' + SHARE.url;
+  document.querySelectorAll('.js-wa').forEach(function(a){ a.href = 'https://wa.me/?text=' + encodeURIComponent(FULL); });
+  function flash(box, msg){
+    var el=box.querySelector('.sh-msg'); if(!el) return;
+    el.textContent=msg; clearTimeout(box._t);
+    box._t=setTimeout(function(){ el.textContent=''; }, 2000);
+  }
+  function selectCopy(box){
+    try{
+      var t=document.createElement('textarea'); t.value=FULL; t.setAttribute('readonly','');
+      t.style.position='fixed'; t.style.top='0'; t.style.left='0'; t.style.opacity='0';
+      document.body.appendChild(t); t.focus(); t.select(); t.setSelectionRange(0, FULL.length);
+      var ok=document.execCommand && document.execCommand('copy'); t.remove();
+      flash(box, ok ? 'Link copied' : SHARE.url);
+    }catch(e){ flash(box, SHARE.url); }
+  }
+  function copyShare(box){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(FULL).then(function(){ flash(box,'Link copied'); }, function(){ selectCopy(box); });
+    } else { selectCopy(box); }
+  }
+  document.querySelectorAll('[data-share] .js-share').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var box=btn.closest('[data-share]');
+      if(navigator.share){
+        navigator.share({ title:'Last Orders', text:SHARE.text, url:SHARE.url }).catch(function(err){
+          if(err && err.name==='AbortError') return;
+          copyShare(box);
+        });
+      } else { copyShare(box); }
+    });
+  });
+
+  /* ---------- waiting-list form ---------- */
+  var form=document.getElementById('wl'), nameIn=document.getElementById('wl-name'), phoneIn=document.getElementById('wl-phone'),
+      hp=document.getElementById('wl-hp'), btn=document.getElementById('wl-btn'), status=document.getElementById('wl-status'),
+      nameErr=document.getElementById('wl-name-err'), phoneErr=document.getElementById('wl-phone-err'),
+      thanks=document.getElementById('wl-thanks'), tell=document.getElementById('wl-tell');
+  function cleanPhone(v){ var s=(v||'').replace(/[\s\-()]/g,''); return s; }
+  function phoneOk(v){ var s=cleanPhone(v); if(s.charAt(0)==='+') s=s.slice(1); return /^\d{10,15}$/.test(s); }
+  function setErr(input, el, msg){ el.textContent=msg; if(msg) input.setAttribute('aria-invalid','true'); else input.removeAttribute('aria-invalid'); }
+  nameIn.addEventListener('input', function(){ setErr(nameIn, nameErr, ''); });
+  phoneIn.addEventListener('input', function(){ setErr(phoneIn, phoneErr, ''); });
+  function say(msg, bad){ status.textContent=msg; status.classList.toggle('bad', !!bad); }
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    if(btn.disabled) return;
+    say('');
+    var name=nameIn.value.trim(), phone=cleanPhone(phoneIn.value);
+    var nameBad = name.length < 2, phoneBad = !phoneOk(phoneIn.value);
+    setErr(nameIn, nameErr, nameBad ? 'Add your name.' : '');
+    setErr(phoneIn, phoneErr, phoneBad ? 'Check your number.' : '');
+    if(nameBad){ nameIn.focus(); return; }
+    if(phoneBad){ phoneIn.focus(); return; }
+    btn.disabled=true; btn.textContent='Joining';
+    if(hp.value){ /* bot: pretend nothing happened, send nothing */
+      btn.textContent='Join'; btn.disabled=false;
+      say(WAITLIST.url ? 'You are on the list.' : 'Preview only: nothing is saved yet.');
+      return;
+    }
+    try{
+      var res = await submitLead(name, phone);
+      if(res && res.preview){
+        say('Preview only: nothing is saved yet.');
+        thanks.hidden=false; tell.hidden=true;
+        btn.textContent='Join'; btn.disabled=false;
+      } else {
+        say('You are on the list.');
+        thanks.hidden=false; tell.hidden=false;
+        btn.textContent='Joined';
+        nameIn.readOnly=true; phoneIn.readOnly=true;
+      }
+    }catch(err){
+      say('Could not save that. Please try again.', true);
+      btn.textContent='Join'; btn.disabled=false;
+    }
+  });
+})();
+</script>
+</body>
+</html>
