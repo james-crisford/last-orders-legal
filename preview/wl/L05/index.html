@@ -143,12 +143,20 @@ p{margin:0 0 14px}
 .board header{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px dashed rgba(200,155,74,.4);padding-bottom:7px;margin-bottom:6px}
 .board .kicker{color:var(--gold);font-size:11px}
 .board .count{display:block;font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums;margin-top:2px}
-.board ol{list-style:none;margin:0;padding:0;min-height:56px}
+.board ol{list-style:none;margin:0;padding:0;min-height:176px}
 .board li{display:flex;gap:10px;align-items:baseline;padding:3px 0;font-family:var(--chalk);font-size:22px;line-height:1.1;color:var(--cream);
   animation:chalkin .6s cubic-bezier(.2,.8,.2,1) both}
-.board li .tm{font-family:var(--body);font-size:12px;font-variant-numeric:tabular-nums;color:var(--gold);min-width:118px;font-weight:600}
+.board li{align-items:center}
+.board li.off{visibility:hidden;animation:none}
+.board li .rk{font-family:var(--body);font-size:12px;font-weight:700;color:var(--gold);width:16px;text-align:center}
+.board li .nm{min-width:62px}
+.board li .bar{flex:1;height:9px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden;min-width:40px}
+.board li .bar i{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,#c97d1e,var(--amber));transition:width .5s ease-out}
+.board li.lead .bar i{background:linear-gradient(90deg,var(--amber),#ffe3a0)}
+.board li.lead .nm{color:var(--gold)}
+.board li .n{font-family:var(--body);font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;min-width:24px;text-align:right;color:var(--cream)}
 .board li .aside{display:block;font-size:17px;color:var(--dim)}
-.board li.done{font-size:27px;color:var(--gold);padding-top:6px}
+.board li.done{font-size:24px;color:var(--gold);padding-top:8px;justify-content:center}
 @keyframes chalkin{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
 .board .more{display:none}
 
@@ -183,7 +191,7 @@ p{margin:0 0 14px}
   .chalkline{bottom:auto;top:5%;font-size:48px}
   .board{position:absolute;right:var(--gut);bottom:40px;width:330px;margin:0}
   .globe-box{aspect-ratio:1/0.9}
-  .board ol{min-height:104px}
+  .board ol{min-height:176px}
   .clocks{max-width:540px;margin-top:28px}
 }
 
@@ -331,7 +339,7 @@ footer nav a{min-height:44px;display:inline-flex;align-items:center}
     </div>
 
     <aside class="board" aria-labelledby="board-h">
-      <header><span><span class="kicker" id="board-h">Live tally</span><span class="count" id="count">0 of 4 in</span></span></header>
+      <header><span><span class="kicker" id="board-h">See who the biggest alcoholic is</span><span class="count" id="count">Tonight: 0 drinks</span></span></header>
       <ol id="feed" aria-live="polite"></ol>
     </aside>
   </div>
@@ -841,22 +849,37 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(measurePin
 
 var feed = document.getElementById('feed'), countEl = document.getElementById('count');
 var announced = [false,false,false,false], wholeDone = false, seq0 = performance.now();
+// the tally is a demo: each mate's total for the night, the biggest one takes the crown
+var FINAL = {sam:9, ollie:7, aaron:6, mads:5}, END_T = WHOLE_AT + 5, LEAD = 'sam', shown = {};
+var rows = {};
+MATES.forEach(function(m){
+  var li = document.createElement('li'); li.className = 'off';
+  li.innerHTML = '<span class="rk"></span><span class="nm">'+m.name+'</span><span class="bar"><i></i></span><span class="n">0</span>';
+  feed.appendChild(li); rows[m.id] = {li:li, bar:li.querySelector('i'), n:li.querySelector('.n'), rk:li.querySelector('.rk')};
+});
+var crown = document.createElement('li'); crown.className = 'done off';
+crown.textContent = '\u{1F451} Sam takes the crown'; feed.appendChild(crown);
+function setTally(m, v){
+  if (shown[m.id] === v) return; shown[m.id] = v;
+  var r = rows[m.id]; r.n.textContent = v; r.bar.style.width = Math.round(100*v/FINAL[LEAD])+'%';
+  var tot = 0; MATES.forEach(function(x){ tot += shown[x.id]||0; });
+  countEl.textContent = 'Tonight: '+tot+' drink'+(tot===1?'':'s');
+}
 function announce(i){
-  var m = MATES[i], p = localAt(m, joinMs(m));
-  var li = document.createElement('li');
-  var tm = m.city+' '+hhmm(p)+(p.wd!=='Fri' ? ' '+p.wd : '');
-  li.innerHTML = '<span class="tm">'+tm+'</span><span>'+m.name+' '+m.drink+' '+m.dn+'</span>';
-  feed.appendChild(li);
+  var m = MATES[i];
+  rows[m.id].li.classList.remove('off');
   m.el.classList.add('in');
-  var n = announced.filter(Boolean).length;
-  countEl.textContent = n === 4 ? 'All 4 in' : n+' of 4 in';
 }
 function goWhole(){
   wholeDone = true;
   root.classList.add('whole');
 }
+function crownLeader(){
+  rows[LEAD].li.classList.add('lead'); rows[LEAD].rk.textContent = '\u{1F451}'; crown.classList.remove('off');
+}
 function finishNow(){
-  for (var i=0;i<4;i++){ if (!announced[i]){ announced[i] = true; announce(i); } }
+  for (var i=0;i<4;i++){ if (!announced[i]){ announced[i] = true; announce(i); } setTally(MATES[i], FINAL[MATES[i].id]); }
+  crownLeader();
   if (!wholeDone) goWhole();
   state.joined = [1,1,1,1]; state.arcs = ARCS.map(function(){return 1}); state.warm = 1; state.wave = -1;
   hero.lam = 20; hero.phi = 26; hero.dirty = true;
@@ -880,6 +903,8 @@ function frame(now){
     state.warm = clamp((t - WHOLE_AT)/1.4, 0, 1);
     state.wave = t >= WHOLE_AT ? (t - WHOLE_AT)/1.6 : -1;
     if (!wholeDone && t >= WHOLE_AT) goWhole();
+    for (var q=0;q<4;q++){ var mm = MATES[q]; if (announced[q]) setTally(mm, Math.round(FINAL[mm.id]*ease(clamp((t - mm.at)/(END_T - mm.at), 0, 1)))); }
+    if (t >= END_T && crown.classList.contains('off')) crownLeader();
     var simMin = t < WHOLE_AT ? START_MIN + (t/WHOLE_AT)*18 : START_MIN + 18 + (t - WHOLE_AT)/60;
     paintClocks(BASE + (simMin - START_MIN)*60000);
     var cam = t < CAM[CAM.length-1].t + 0.01 ? camAt(t) : null;
