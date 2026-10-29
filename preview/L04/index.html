@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en-GB">
+<head><meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Last Orders - the nights worth keeping</title>
+<meta name="description" content="Last Orders is an iPhone app for one private group of mates. One shared live board for the night, a scrapbook of the best ones, a world map of where you've shared a drink.">
+<meta name="theme-color" content="#1c120a">
+<meta property="og:title" content="Last Orders - the nights worth keeping">
+<meta property="og:description" content="One shared table for your lot, wherever they've ended up.">
+<link rel="icon" href="img/app-icon.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600;1,9..144,800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  // Decide the mode before first paint: camera (pans across the table) unless reduced motion.
+  (function(){var d=document.documentElement;d.classList.add('js');
+  try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches)d.classList.add('cam');}catch(e){}})();
+</script>
+<style>
+:root{
+  --ground:#16322A;--deep:#122A23;--panel:#1D2B26;--card:#243B33;
+  --amber:#E8A13C;--brass:#C89B4A;--cream:#F3E9D2;--cream-dim:#9DB5A9;--ink:#14251F;--gold:#E7C86A;
+  --wood:#2b1b10;--paper:#F3E9D2;--paper2:#EADDC0;
+  --display:"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --body:"Work Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --hand:"Caveat","Segoe Print","Bradley Hand","Comic Sans MS",cursive;
+  --W:100vw;--H:100vh;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--wood)}
+body{margin:0;background:#2b1b10 url(img/wood.jpg) repeat;color:var(--cream);font-family:var(--body);font-size:16px;line-height:1.5;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;-webkit-user-drag:none;user-select:none}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:6px}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:fixed;left:12px;top:-60px;z-index:1000;background:var(--cream);color:var(--ink);padding:10px 14px;border-radius:8px;font-weight:600;text-decoration:none}
+.skip:focus{top:12px}
+
+/* ---------- top bar ---------- */
+.bar{position:fixed;inset:0 0 auto 0;z-index:900;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 16px 18px;background:linear-gradient(#140c06e6,#140c0600);pointer-events:none}
+.bar>*{pointer-events:auto}
+.bar .mark{display:flex;align-items:center;gap:8px;font-family:var(--display);font-style:italic;font-weight:800;font-size:20px;color:var(--cream);text-decoration:none;letter-spacing:-.01em}
+.bar .mark img{width:30px;height:30px;border-radius:8px}
+.bar .mark span{display:none;white-space:nowrap}
+.tidy-ic{display:inline-flex;align-items:center;gap:6px}.tidy-ic .t{display:none}
+@media (min-width:600px){.bar .mark span{display:inline}.tidy-ic .t{display:inline}}
+.bar nav{display:none;gap:4px}
+.bar nav a{font-family:var(--hand);font-size:22px;font-weight:700;color:var(--cream);text-decoration:none;padding:2px 10px;border-radius:8px;opacity:.82}
+.bar nav a:hover,.bar nav a[aria-current="true"]{opacity:1;background:#ffffff14}
+.bar .right{display:flex;gap:8px;align-items:center}
+.pill{font:600 14px/1 var(--body);border-radius:999px;padding:10px 14px;text-decoration:none;border:0;cursor:pointer;white-space:nowrap}
+.pill.amber{background:var(--amber);color:var(--ink);box-shadow:0 3px 0 #9c6417}
+.pill.ghost{background:#00000059;color:var(--cream);border:1px solid #f3e9d247;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+@media (min-width:980px){.bar nav{display:flex}.bar{padding:14px 28px 22px}}
+
+/* ---------- the table: flow mode (default, reduced motion, no JS) ---------- */
+#table{position:relative;overflow-x:clip}
+.viewport{position:relative}
+.plane{position:relative}
+.wood{display:none}
+.cluster{position:relative;width:100%;min-height:var(--H);padding:88px 16px 72px;display:flex;flex-direction:column;justify-content:center}
+.cluster>.inner{width:100%}
+.inner{position:relative;max-width:1180px;margin:0 auto}
+
+/* ---------- camera mode ---------- */
+.cam #table{overflow:visible}
+.cam .viewport{position:sticky;top:0;height:100vh;overflow:hidden;contain:strict}
+@supports (height:100dvh){.cam .viewport{height:100dvh}}
+.cam .plane{position:absolute;left:0;top:0;width:1px;height:1px;transform-origin:0 0;will-change:transform}
+.cam .wood{display:block;position:absolute;background:#2b1b10 url(img/wood.jpg) repeat;background-size:640px 639px}
+.cam .cluster{position:absolute;width:var(--W);min-height:var(--H)}
+.cam body{overflow:hidden auto}
+
+/* pub lamp + vignette over the table */
+.lamp{position:fixed;inset:0;pointer-events:none;z-index:800;background:
+  radial-gradient(120% 90% at 50% 38%,#ffcf8a14 0%,#ffcf8a08 35%,transparent 60%),
+  radial-gradient(150% 120% at 50% 45%,transparent 45%,#0a0503a6 100%)}
+
+/* ---------- objects on the table ---------- */
+.loose{position:absolute;left:var(--l);top:var(--t);width:var(--w);transform:rotate(var(--r,0deg));z-index:var(--z,4)}
+.loose img{width:100%;height:auto;filter:drop-shadow(0 5px 6px #00000073) drop-shadow(0 1px 1px #0000008c)}
+[data-drag]{touch-action:none;cursor:grab}
+[data-drag="mouse"]{touch-action:auto}
+.held{cursor:grabbing}
+html:not(.cam) #bump{display:none}
+.held img,.held.phone{filter:drop-shadow(0 22px 20px #00000070) drop-shadow(0 3px 4px #00000080)}
+.held.paper,.held.ticket,.held.card{box-shadow:0 30px 40px -12px #000000b3,0 4px 8px #00000066}
+.dsk{display:none}
+@media (min-width:900px){
+  .loose{left:var(--dl,var(--l));top:var(--dt,var(--t));width:var(--dw,var(--w))}
+  .dsk{display:block}.mob{display:none}
+}
+.ring{position:absolute;left:var(--l);top:var(--t);width:var(--s,120px);aspect-ratio:1;border-radius:50%;pointer-events:none;z-index:1;
+  background:radial-gradient(circle,transparent 60%,#0000002e 63%,#00000014 67%,transparent 70%),radial-gradient(circle,#ffffff06 0 59%,transparent 60%);}
+@media (min-width:900px){.ring{left:var(--dl,var(--l));top:var(--dt,var(--t))}}
+
+/* paper notes */
+.paper{position:relative;background:var(--paper);color:var(--ink);padding:24px 22px 22px;border-radius:2px;transform:rotate(var(--r,0deg));z-index:20;
+  background-image:linear-gradient(180deg,#ffffff40,#ffffff00 40%),radial-gradient(120% 80% at 0% 100%,#d9c49a40,transparent 60%);
+  box-shadow:0 1px 0 #0000001a,0 14px 26px -10px #000000a6,0 2px 4px #00000059}
+.paper.lined{background-image:linear-gradient(180deg,#ffffff40,#ffffff00 40%),repeating-linear-gradient(180deg,transparent 0 31px,#5a86a429 31px 32px);background-position:0 0,0 14px}
+.tape::before{content:"";position:absolute;top:-13px;left:50%;width:104px;height:28px;margin-left:-52px;transform:rotate(var(--tr,-3deg));background:linear-gradient(90deg,#e8a13c8c,#f0c37a99 50%,#e8a13c8c);box-shadow:0 1px 2px #0000002e;opacity:.95}
+.tape.l::before{left:18%}.tape.r::before{left:auto;right:4%;margin-left:0}
+.paper h1,.paper h2,.paper h3{font-family:var(--display);color:var(--ink);margin:0;letter-spacing:-.02em;line-height:1.02}
+.paper p{margin:.7em 0 0;color:#2b3a33}
+.paper .hand{font-family:var(--hand);font-size:1.45em;line-height:1.1;color:#3c4a43}
+.tag{display:inline-block;font:600 12px/1 var(--body);letter-spacing:.18em;text-transform:uppercase;color:#7a5a24;margin-bottom:12px}
+h2.big{font-size:clamp(34px,9vw,58px);font-style:italic;font-weight:800}
+.chalk{position:absolute;font-family:var(--hand);font-weight:700;color:var(--cream);font-size:clamp(22px,5.6vw,30px);line-height:1.05;z-index:3;pointer-events:none;text-shadow:0 1px 0 #00000080}
+.chalk svg{display:block;margin-top:4px}
+.chalk{text-shadow:0 0 10px #000,0 1px 2px #000,0 0 3px #000}
+.chalk svg.dsk{display:none}@media (min-width:900px){.chalk svg.dsk{display:block}}
+.fling{right:12px;bottom:calc(30% + 4px);text-align:right;z-index:13}
+@media (min-width:900px){.fling{right:auto;left:49%;bottom:4%;text-align:left}}
+
+/* brass plaque */
+.plaque{position:relative;display:inline-flex;align-items:center;gap:12px;padding:10px 20px 10px 12px;border-radius:6px;z-index:21;transform:rotate(var(--r,0deg));
+  background:linear-gradient(160deg,#f1d98f 0%,#d3a955 30%,#a77c36 55%,#d6b064 78%,#b88d43 100%);box-shadow:inset 0 1px 0 #fff6,inset 0 -2px 3px #0000004d,0 10px 18px -6px #000000b3}
+.plaque img{width:46px;height:46px;border-radius:11px;box-shadow:0 1px 2px #00000080}
+.plaque b{font-family:var(--display);font-style:italic;font-weight:800;font-size:30px;color:#1d1408;letter-spacing:-.02em;text-shadow:0 1px 0 #ffffff59}
+.plaque::before,.plaque::after{content:"";position:absolute;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff7,#6d5020 70%)}
+.plaque::before{left:-14px;display:none}.plaque::after{right:7px}
+
+/* app store badge (placeholder in the real badge style) */
+.badge{display:inline-flex;align-items:center;gap:10px;background:#000;color:#fff;border:1px solid #a6a6a6;border-radius:12px;padding:8px 16px 8px 12px;text-decoration:none;min-height:54px;box-shadow:0 8px 16px -6px #000000b3}
+.badge svg{width:26px;height:30px;fill:#fff;flex:none}
+.badge span{display:flex;flex-direction:column;line-height:1.05}
+.badge small{font-size:11px;letter-spacing:.02em}
+.badge strong{font-size:22px;font-weight:600;letter-spacing:-.02em}
+.badge:hover{background:#111}
+.share{display:inline-flex;align-items:center;gap:8px;font:600 15px/1 var(--body);background:transparent;border:2px dashed #14251f66;color:var(--ink);border-radius:999px;padding:12px 16px;cursor:pointer;text-decoration:none}
+.share:hover{background:#14251f0f}
+.share.slim{border:0;padding:8px 4px;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px}
+@media (min-width:900px){.share.slim{border:2px dashed #14251f66;padding:12px 16px;text-decoration:none}}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:18px}
+
+/* phones lying on the table */
+.phone{position:relative;width:var(--pw,clamp(150px,42vw,262px));aspect-ratio:460/997;padding:7px;border-radius:30px;background:linear-gradient(145deg,#2d2f31,#0b0c0d 40%,#1a1b1c);transform:rotate(var(--r,0deg));z-index:12;
+  box-shadow:inset 0 0 0 1.5px #4a4c4f,0 22px 30px -12px #000000cc,0 3px 6px #00000080}
+.phone .scr{position:relative;width:100%;height:100%;border-radius:24px;overflow:hidden;background:var(--deep)}
+.phone .scr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top}
+.phone .scr::after{content:"";position:absolute;top:7px;left:50%;width:28%;height:4.2%;max-height:22px;margin-left:-14%;border-radius:20px;background:#000}
+.phone .seq img{opacity:0}
+.phone .seq img.on{opacity:1}
+.cap-line{font-family:var(--hand);font-weight:700;font-size:22px;color:var(--cream);text-align:center;margin-top:10px;text-shadow:0 1px 0 #0009}
+
+/* prints and clippings */
+.print{position:relative;background:#fbf7ec;padding:10px 10px 12px;transform:rotate(var(--r,0deg));z-index:14;box-shadow:0 18px 26px -12px #000000c0,0 2px 4px #00000066}
+.print img{border-radius:2px}
+.print{width:min(300px,82vw)}@media (min-width:900px){.print{width:440px}}
+.print figcaption{font-family:var(--hand);font-weight:700;font-size:24px;color:var(--ink);text-align:center;padding-top:6px}
+
+/* raffle tickets for the 3 steps */
+.tickets{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:14px}
+.ticket{position:relative;display:flex;align-items:stretch;background:var(--amber);color:var(--ink);border-radius:6px;transform:rotate(var(--r,0deg));z-index:20;box-shadow:0 12px 20px -10px #000000b3,0 2px 3px #00000059;
+  -webkit-mask:radial-gradient(circle 7px at 0 50%,#0000 98%,#000) ,radial-gradient(circle 7px at 100% 50%,#0000 98%,#000);-webkit-mask-composite:source-in;mask:radial-gradient(circle 7px at 0 50%,#0000 98%,#000) intersect,radial-gradient(circle 7px at 100% 50%,#0000 98%,#000)}
+.ticket .no{flex:none;width:74px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:2px dashed #14251f73;padding:10px 4px}
+.ticket .no small{font:600 9px/1 var(--body);letter-spacing:.2em}
+.ticket .no b{font-family:var(--display);font-style:italic;font-weight:800;font-size:40px;line-height:1}
+.ticket .tx{padding:14px 16px}
+.ticket h3{margin:0;font-family:var(--display);font-weight:800;font-style:italic;font-size:22px;line-height:1.1}
+.ticket p{margin:4px 0 0;font-size:14.5px;color:#22312a}
+
+/* index card for privacy */
+.card{position:relative;background:#fbf8ef;color:var(--ink);padding:22px 22px 20px;transform:rotate(var(--r,0deg));z-index:20;border-radius:3px;
+  background-image:linear-gradient(180deg,transparent 0 52px,#d6455d66 52px 54px,transparent 54px),repeating-linear-gradient(180deg,transparent 0 27px,#5a86a42e 27px 28px);background-position:0 0,0 40px;
+  box-shadow:0 14px 26px -10px #000000a6,0 2px 4px #00000059}
+.card h3{font-family:var(--display);font-style:italic;font-weight:800;font-size:28px;margin:0 0 16px;line-height:1.1}
+.card ul{margin:0;padding:0;list-style:none}
+.card li{position:relative;padding-left:26px;margin:0 0 9px;font-size:16px;line-height:1.4}
+.card li::before{content:"";position:absolute;left:2px;top:4px;width:14px;height:8px;border-left:3px solid #2f6b4f;border-bottom:3px solid #2f6b4f;transform:rotate(-45deg)}
+
+/* receipt footer */
+.receipt{position:relative;width:min(320px,100%);background:#fbf6ea;color:#1c2420;padding:22px 22px 34px;font:500 13px/1.55 var(--body);letter-spacing:.04em;transform:rotate(var(--r,0deg));z-index:20;
+  box-shadow:0 18px 26px -12px #000000c0;-webkit-mask:linear-gradient(#000,#000) top/100% calc(100% - 10px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/16px 10px repeat-x;mask:linear-gradient(#000,#000) top/100% calc(100% - 10px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/16px 10px repeat-x}
+.receipt .head{text-align:center;text-transform:uppercase;letter-spacing:.22em;font-weight:600}
+.receipt .wm{font-family:var(--display);font-style:italic;font-weight:800;font-size:26px;letter-spacing:-.01em;text-transform:none;display:block;margin:2px 0}
+.receipt hr{border:0;border-top:1.5px dashed #1c242066;margin:12px 0}
+.receipt ul{list-style:none;margin:0;padding:0}
+.receipt li{display:flex;justify-content:space-between;gap:10px;text-transform:uppercase}
+.receipt a{text-decoration:underline;text-underline-offset:3px}
+.receipt .small{font-size:12px;text-transform:none;letter-spacing:.02em;color:#36413b}
+
+/* ---------- per-cluster layout ---------- */
+.cluster.hero{justify-content:flex-start}
+.hero .inner{display:flex;flex-direction:column;align-items:flex-start;padding-top:2px}
+.hero .paper.main{margin-top:16px;max-width:560px;padding:24px 20px 18px}
+.hero .cta-row{margin-top:14px;gap:4px 12px}
+@media (max-width:899px){.plaque{padding:8px 16px 8px 10px}.plaque b{font-size:25px}.plaque img{width:38px;height:38px;border-radius:9px}.hero .cluster,.hero{padding-top:74px}}
+.hero h1{font-size:clamp(40px,10.9vw,96px);font-style:italic;font-weight:800;line-height:.95}
+.hero .lede{font-size:clamp(16px,4.2vw,19px)}
+.scrollcue{position:absolute;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);font-family:var(--hand);font-weight:700;font-size:21px;white-space:nowrap;color:var(--cream);text-align:center;z-index:30;pointer-events:none;text-shadow:0 0 10px #000,0 1px 2px #000,0 0 3px #000}
+@media (min-width:900px){.scrollcue{left:28px;transform:none;text-align:left}}
+.scrollcue i{display:block;width:2px;height:26px;margin:4px auto 0;background:linear-gradient(var(--cream),transparent);animation:cue 1.8s ease-in-out infinite}
+@keyframes cue{0%,100%{transform:translateY(-4px);opacity:.4}50%{transform:translateY(5px);opacity:1}}
+.notecol{position:relative;z-index:20;max-width:520px}
+.grid2{display:grid;gap:26px}
+.phones{display:flex;justify-content:center;gap:0;margin-top:26px}
+.phones .phone+.phone{margin-left:-14px}
+@media (min-width:900px){
+  .cluster{padding:120px 48px 80px}
+  .grid2{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:56px}
+  .grid2.flip>:first-child{order:2}
+  .hero .paper.main{margin-top:28px;padding:36px 36px 32px;max-width:640px}
+  .plaque b{font-size:38px}.plaque img{width:56px;height:56px}
+  .phones{margin-top:0}
+  .phones .phone+.phone{margin-left:28px}
+  .tickets{grid-template-columns:repeat(3,1fr);gap:22px}
+  .chalk{font-size:30px}
+}
+.landlord{max-width:460px;margin-top:22px;z-index:15}
+.landlord img{border-radius:16px;filter:drop-shadow(0 16px 18px #00000099)}
+.clip{position:relative;max-width:560px;transform:rotate(var(--r,0deg));z-index:14}
+.clip .cl{background:#1b2420;padding:14px 14px 0;border-radius:3px;box-shadow:0 18px 26px -12px #000000c0}
+.clip .cl img{width:100%}
+.close .paper.main{max-width:640px}
+.close h2.big{font-size:clamp(38px,10vw,74px)}
+.foot-row{display:grid;gap:34px;align-items:start;justify-items:center}
+@media (min-width:900px){.foot-row{grid-template-columns:1.4fr 1fr;justify-items:start}}
+.sharelinks{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:14px;font-size:14px}
+.sharelinks a{color:#22312a;text-underline-offset:3px}
+.honest{font-size:14px;color:#48564f;margin-top:12px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,30px);opacity:0;z-index:950;background:var(--cream);color:var(--ink);padding:10px 16px;border-radius:999px;font-weight:600;font-size:14px;transition:.25s;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion: reduce){.scrollcue i{animation:none}.toast{transition:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#join">Skip to how to join</a>
+
+<div class="bar" role="banner">
+  <a class="mark" href="#hero" data-go="0"><img src="img/app-icon.webp" alt="" width="30" height="30"><span>Last Orders</span><b class="sr">Last Orders, back to the top</b></a>
+  <nav aria-label="Around the table">
+    <a href="#tonight" data-go="1">Tonight</a>
+    <a href="#memories" data-go="2">Memories</a>
+    <a href="#world" data-go="3">World</a>
+    <a href="#caps" data-go="4">Caps</a>
+    <a href="#join" data-go="6">Join</a>
+  </nav>
+  <div class="right">
+    <button class="pill ghost tidy-ic" type="button" id="bump" aria-label="Bump the table and send everything sliding"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="t">Bump the table</span></button>
+    <button class="pill ghost tidy-ic" type="button" id="tidy" aria-label="Tidy the table: put everything back where it was"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg><span class="t">Tidy up</span></button>
+    <!-- [LINK TBC: App Store URL goes here, app id 6803027948 pending approval] -->
+    <a class="pill amber" href="#download" data-go="7">Get the app</a>
+  </div>
+</div>
+
+<main id="table">
+<div class="viewport" id="viewport">
+<div class="plane" id="plane">
+  <div class="wood" id="wood" aria-hidden="true"></div>
+
+  <!-- ===================== 0. HERO: the spill ===================== -->
+  <section class="cluster hero" id="hero" data-x="0" aria-labelledby="h-hero">
+    <div class="inner">
+      <div class="plaque" style="--r:-1.5deg" data-drag="mouse" data-kind="note">
+        <img src="img/app-icon.webp" alt="" width="46" height="46"><b>Last Orders</b>
+      </div>
+      <div class="paper main tape l" style="--r:-1.6deg;--tr:-4deg" data-drag="mouse" data-kind="note">
+        <span class="tag">An iPhone app for your mates</span>
+        <h1 id="h-hero">The nights worth keeping.</h1>
+        <p class="lede">One shared table for your lot, wherever they've ended up. Log the night together, live. Keep the good ones.</p>
+        <div class="cta-row">
+          <!-- [LINK TBC: App Store URL goes here, app id 6803027948 pending approval] -->
+          <a class="badge" href="#download" data-go="7"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg><span><small>Download on the</small><strong>App Store</strong></span></a>
+          <button class="share slim" type="button" data-share><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/></svg>Send this to your mates</button>
+        </div>
+      </div>
+    </div>
+    <!-- the spill: real polaroids cut from the app's My Pub dial and Memories scrapbook -->
+    <div class="loose" data-drag data-kind="pol" data-spill style="--l:-6%;--t:66%;--w:clamp(120px,33vw,210px);--r:-11deg;--dl:55%;--dt:13%;--dw:230px;--z:6"><img src="img/pol-4oct-gang.webp" alt="A polaroid from the app's Memories scrapbook: Sun 4 Oct, the whole gang" width="487" height="616"></div>
+    <div class="loose" data-drag data-kind="pol" data-spill style="--l:60%;--t:63%;--w:clamp(110px,30vw,180px);--r:9deg;--dl:74%;--dt:9%;--dw:190px;--z:7"><img src="img/dial-18oct.webp" alt="" width="285" height="345"></div>
+    <div class="loose" data-drag data-kind="pol" data-spill style="--l:27%;--t:72%;--w:clamp(112px,31vw,190px);--r:3deg;--dl:63%;--dt:46%;--dw:200px;--z:8"><img src="img/pol-18oct.webp" alt="" width="301" height="392"></div>
+    <div class="loose" data-drag data-kind="pol" data-spill style="--l:68%;--t:80%;--w:clamp(104px,28vw,170px);--r:-7deg;--dl:84%;--dt:40%;--dw:178px;--z:9"><img src="img/dial-6oct.webp" alt="" width="285" height="345"></div>
+    <div class="loose" data-drag data-kind="pol" data-spill style="--l:2%;--t:86%;--w:clamp(104px,28vw,170px);--r:12deg;--dl:49%;--dt:55%;--dw:176px;--z:10"><img src="img/dial-9oct.webp" alt="" width="285" height="345"></div>
+    <div class="loose" data-drag data-kind="pol" data-spill style="--l:40%;--t:88%;--w:clamp(112px,31vw,190px);--r:-4deg;--dl:76%;--dt:66%;--dw:196px;--z:11"><img src="img/pol-25oct.webp" alt="" width="305" height="398"></div>
+    <div class="loose" data-drag data-kind="pol" data-spill style="--l:76%;--t:-1%;--w:clamp(96px,26vw,160px);--r:14deg;--dl:91%;--dt:72%;--dw:170px;--z:5"><img src="img/dial-4oct.webp" alt="" width="285" height="345"></div>
+    <div class="loose dsk" data-drag data-kind="pol" data-spill style="--l:0;--t:0;--dl:35%;--dt:78%;--dw:170px;--r:-14deg;--z:5"><img src="img/dial-developing.webp" alt="" width="283" height="339"></div>
+    <div class="loose" data-drag data-kind="cap" style="--l:6%;--t:57%;--w:clamp(50px,14vw,74px);--dl:92%;--dt:5%;--z:12"><img src="img/cap-unknown.webp" alt="" width="180" height="180"></div>
+    <div class="loose dsk" data-drag data-kind="mat" style="--l:0;--t:0;--dl:4%;--dt:74%;--dw:140px;--r:-8deg;--z:3"><img src="img/mat-regular.webp" alt="" width="220" height="219"></div>
+    <i class="ring" style="--l:60%;--t:30%;--s:130px;--dl:46%;--dt:56%" aria-hidden="true"></i>
+    <i class="ring" style="--l:6%;--t:52%;--s:110px;--dl:30%;--dt:84%" aria-hidden="true"></i>
+    <p class="chalk fling" aria-hidden="true" id="flinghint">
+      <span class="mob">go on, fling one</span><span class="dsk">go on, grab one and fling it</span><svg class="dsk" width="70" height="34" viewBox="0 0 70 34" aria-hidden="true" fill="none" stroke="#F3E9D2" stroke-width="2.4" stroke-linecap="round"><path d="M4 28c18-2 36-10 58-24"/><path d="M50 4h12v11"/></svg>
+    </p>
+    <p class="scrollcue" aria-hidden="true">scroll to slide the table<i></i></p>
+  </section>
+
+  <!-- ===================== 1. TONIGHT ===================== -->
+  <section class="cluster" id="tonight" data-x="0.62" aria-labelledby="h-tonight">
+    <div class="inner grid2">
+      <div class="notecol">
+        <div class="paper lined tape" style="--r:1.4deg" data-drag="mouse" data-kind="note">
+          <span class="tag">Tonight</span>
+          <h2 class="big" id="h-tonight">Same night, different postcodes.</h2>
+          <p>Snap your drink and the app names it. It lands on tonight's board, live, so the ones at the bar and the one who moved to Bristol are all looking at the same night.</p>
+          <p class="hand">While it's on, the night sits on your Lock Screen too.</p>
+        </div>
+      </div>
+      <figure class="print" style="--r:-3deg;margin:0 auto" data-drag="mouse" data-kind="note">
+        <img src="img/print-tonight.webp" alt="The real Tonight board from the app: Sam opened the tab at 20:26, with Sam, Ched, Ollie, Mads and Aaron and what each is drinking" width="560" height="642">
+        <figcaption>tonight's board, live</figcaption>
+      </figure>
+    </div>
+    <div class="loose" data-drag data-kind="cap" style="--l:80%;--t:4%;--w:clamp(50px,14vw,74px);--dl:3%;--dt:12%;--z:6"><img src="img/cap-cider.webp" alt="" width="180" height="180"></div>
+    <div class="loose" data-drag data-kind="mat" style="--l:-10%;--t:88%;--w:clamp(90px,24vw,140px);--r:12deg;--dl:44%;--dt:80%;--dw:150px;--z:3"><img src="img/mat-photographer.webp" alt="" width="220" height="156"></div>
+    <i class="ring" style="--l:70%;--t:86%;--s:120px;--dl:88%;--dt:14%" aria-hidden="true"></i>
+      <div class="loose" data-drag data-kind="pol" style="--l:6%;--t:101%;--w:clamp(100px,27vw,170px);--r:-13deg;--dl:30%;--dt:100%;--z:5"><img src="img/pol-25oct.webp" alt="" width="305" height="398"></div>
+    <div class="loose" data-drag data-kind="cap" style="--l:72%;--t:104%;--w:clamp(50px,14vw,74px);--dl:70%;--dt:104%;--z:6"><img src="img/cap-ale.webp" alt="" width="180" height="180"></div>
+  </section>
+
+  <!-- ===================== 2. MY PUB + MEMORIES ===================== -->
+  <section class="cluster" id="memories" data-x="-0.12" aria-labelledby="h-mem">
+    <div class="inner grid2 flip">
+      <div class="notecol">
+        <div class="paper tape r" style="--r:-1.2deg;--tr:4deg" data-drag="mouse" data-kind="note">
+          <span class="tag">My Pub + Memories</span>
+          <h2 class="big" id="h-mem">Press a day. Watch the night develop.</h2>
+          <p>My Pub is a beer-mat dial of your days. The more mates were out, the brighter a day glows. Press one and that night develops like a polaroid in the middle. Tap the centre and it flips for a fact.</p>
+        </div>
+        <div class="paper" style="--r:2deg;margin-top:20px;max-width:420px;margin-left:auto" data-drag="mouse" data-kind="note">
+          <h3 style="font-size:28px;font-style:italic;font-weight:800">Memories</h3>
+          <p>A scrapbook of the nights worth keeping: who was there, and what was new to you.</p>
+        </div>
+      </div>
+      <div class="phones">
+        <div>
+          <div class="phone" style="--r:-5deg" data-drag="mouse" data-kind="phone">
+            <div class="scr seq" id="pubseq" role="img" aria-label="Real frames from the app's My Pub screen: the beer-mat dial opens, Sun 4 Oct develops as a polaroid in the middle, then the centre flips to a fact">
+              <img class="on" src="img/pub-6.webp" alt="" data-ms="2400">
+              <img src="img/pub-7.webp" alt="" data-ms="140">
+              <img src="img/pub-8.webp" alt="" data-ms="2600">
+              <img src="img/pub-0.webp" alt="" data-ms="1300">
+              <img src="img/pub-1.webp" alt="" data-ms="110">
+              <img src="img/pub-2.webp" alt="" data-ms="110">
+              <img src="img/pub-3.webp" alt="" data-ms="110">
+              <img src="img/pub-4.webp" alt="" data-ms="1000">
+              <img src="img/pub-5.webp" alt="" data-ms="240">
+            </div>
+          </div>
+          <p class="cap-line" aria-hidden="true">press, develop, flip</p>
+        </div>
+        <div style="margin-top:38px">
+          <div class="phone" style="--r:4deg" data-drag="mouse" data-kind="phone">
+            <div class="scr"><img src="img/scr-memory.webp" alt="A night opened in the app's Memories scrapbook: Sun 4 Oct, the whole gang, with Tom, Mel, Dave, Sam and Priya, and what was new to you that night" width="460" height="995"></div>
+          </div>
+          <p class="cap-line" aria-hidden="true">a night, opened up</p>
+        </div>
+      </div>
+    </div>
+    <div class="loose" data-drag data-kind="pol" style="--l:76%;--t:-3%;--w:clamp(96px,26vw,160px);--r:10deg;--dl:84%;--dt:6%;--dw:170px;--z:6"><img src="img/pol-4oct-big.webp" alt="" width="520" height="635"></div>
+    <div class="loose dsk" data-drag data-kind="mat" style="--l:0;--t:0;--dl:-1%;--dt:78%;--dw:150px;--r:-10deg;--z:3"><img src="img/mat-variety_pack.webp" alt="" width="220" height="219"></div>
+    <i class="ring" style="--l:-8%;--t:40%;--s:140px;--dl:47%;--dt:4%" aria-hidden="true"></i>
+      <div class="loose" data-drag data-kind="pol" style="--l:62%;--t:101%;--w:clamp(100px,27vw,170px);--r:8deg;--dl:62%;--dt:101%;--z:5"><img src="img/dial-9oct.webp" alt="" width="285" height="345"></div>
+    <div class="loose" data-drag data-kind="stamp" style="--l:-4%;--t:104%;--w:clamp(104px,30vw,160px);--r:-8deg;--dl:20%;--dt:100%;--dw:160px;--z:5"><img src="img/stamp-de.webp" alt="" width="300" height="198"></div>
+  </section>
+
+  <!-- ===================== 3. THE WORLD + PASSPORT ===================== -->
+  <section class="cluster" id="world" data-x="0.58" aria-labelledby="h-world">
+    <div class="inner grid2">
+      <div class="notecol">
+        <div class="paper lined tape l" style="--r:-1.8deg" data-drag="mouse" data-kind="note">
+          <span class="tag">The World + the Passport</span>
+          <h2 class="big" id="h-world">Every country you've shared a drink in.</h2>
+          <p>Spin the globe and see everywhere the group has been. Each new country gets a stamp in your passport, from the local to the holiday to the wedding abroad.</p>
+        </div>
+        <figure class="landlord" style="margin-left:0;margin-right:0">
+          <div class="loose-static" data-drag="mouse" data-kind="note" style="transform:rotate(1.5deg)"><img src="img/landlord-says.webp" alt="The landlord says: Six countries stamped in your passport. You've been further than my cellar, I'll give you that. Today's line. A fresh one tomorrow." width="640" height="342"></div>
+          <figcaption class="cap-line" style="text-align:left">and yes, the landlord talks. short, dry, warm.</figcaption>
+        </figure>
+      </div>
+      <div class="phones">
+        <div>
+          <div class="phone" style="--r:3deg" data-drag="mouse" data-kind="phone">
+            <div class="scr"><img src="img/scr-world.webp" alt="The app's world tour: a globe with six countries lit in amber, and the passport with stamps for the United Kingdom, Portugal, Ireland, France, Germany and Spain" width="460" height="997"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="loose" data-drag data-kind="stamp" style="--l:-6%;--t:-2%;--w:clamp(104px,30vw,160px);--r:-9deg;--dl:46%;--dt:6%;--dw:170px;--z:6"><img src="img/stamp-pt.webp" alt="" width="300" height="194"></div>
+    <div class="loose" data-drag data-kind="stamp" style="--l:68%;--t:1%;--w:clamp(104px,30vw,160px);--r:8deg;--dl:86%;--dt:10%;--dw:170px;--z:6"><img src="img/stamp-gb.webp" alt="" width="300" height="194"></div>
+    <div class="loose" data-drag data-kind="stamp" style="--l:64%;--t:92%;--w:clamp(104px,30vw,160px);--r:-6deg;--dl:83%;--dt:76%;--dw:170px;--z:6"><img src="img/stamp-es.webp" alt="" width="300" height="188"></div>
+    <div class="loose dsk" data-drag data-kind="stamp" style="--l:0;--t:0;--dl:47%;--dt:80%;--dw:160px;--r:11deg;--z:6"><img src="img/stamp-ie.webp" alt="" width="300" height="191"></div>
+    <div class="loose dsk" data-drag data-kind="stamp" style="--l:0;--t:0;--dl:-2%;--dt:84%;--dw:160px;--r:-5deg;--z:6"><img src="img/stamp-fr.webp" alt="" width="300" height="193"></div>
+    <div class="loose" data-drag data-kind="mat" style="--l:-12%;--t:90%;--w:clamp(90px,24vw,140px);--r:-12deg;--dl:91%;--dt:42%;--dw:150px;--z:3"><img src="img/mat-globetrotter.webp" alt="" width="220" height="207"></div>
+      <div class="loose" data-drag data-kind="pol" style="--l:30%;--t:102%;--w:clamp(100px,27vw,170px);--r:-6deg;--dl:38%;--dt:101%;--z:5"><img src="img/pol-18oct.webp" alt="" width="301" height="392"></div>
+    <div class="loose" data-drag data-kind="cap" style="--l:80%;--t:106%;--w:clamp(50px,14vw,74px);--dl:12%;--dt:104%;--z:6"><img src="img/cap-wine.webp" alt="" width="180" height="180"></div>
+  </section>
+
+  <!-- ===================== 4. CAPS ===================== -->
+  <section class="cluster" id="caps" data-x="-0.04" aria-labelledby="h-caps">
+    <div class="inner grid2 flip">
+      <div class="notecol">
+        <div class="paper tape" style="--r:1.6deg" data-drag="mouse" data-kind="note">
+          <span class="tag">The Cap collection</span>
+          <h2 class="big" id="h-caps">Name the drink. Keep the cap.</h2>
+          <p>Name the brand and its bottle cap goes up on your wall. A little souvenir of what you've tried and where you tried it. Not a scoreboard.</p>
+        </div>
+      </div>
+      <div class="phones">
+        <div class="phone" style="--r:-4deg" data-drag="mouse" data-kind="phone">
+          <div class="scr"><img src="img/scr-caps.webp" alt="The app's cap collection: a wall of real bottle caps you've earned by naming the drink" width="460" height="997"></div>
+        </div>
+      </div>
+    </div>
+    <div class="loose" data-drag data-kind="cap" style="--l:6%;--t:58%;--w:clamp(54px,15vw,80px);--dl:4%;--dt:58%;--z:8"><img src="img/cap-ale.webp" alt="" width="180" height="180"></div>
+    <div class="loose" data-drag data-kind="cap" style="--l:76%;--t:60%;--w:clamp(54px,15vw,80px);--dl:14%;--dt:70%;--z:8"><img src="img/cap-stout.webp" alt="" width="180" height="180"></div>
+    <div class="loose" data-drag data-kind="cap" style="--l:24%;--t:96%;--w:clamp(54px,15vw,80px);--dl:24%;--dt:60%;--z:8"><img src="img/cap-wine.webp" alt="" width="180" height="180"></div>
+    <div class="loose" data-drag data-kind="cap" style="--l:60%;--t:97%;--w:clamp(54px,15vw,80px);--dl:30%;--dt:76%;--z:8"><img src="img/cap-cider.webp" alt="" width="180" height="180"></div>
+    <div class="loose" data-drag data-kind="cap" style="--l:84%;--t:2%;--w:clamp(54px,15vw,80px);--dl:40%;--dt:66%;--z:8"><img src="img/cap-unknown.webp" alt="" width="180" height="180"></div>
+    <div class="loose dsk" data-drag data-kind="cap" style="--l:0;--t:0;--dl:9%;--dt:84%;--dw:80px;--z:8"><img src="img/cap-ale.webp" alt="" width="180" height="180"></div>
+    <p class="chalk" style="left:16px;bottom:16px" aria-hidden="true" id="capshint"><span>flick a cap into the others</span></p>
+      <div class="loose" data-drag data-kind="mat" style="--l:52%;--t:104%;--w:clamp(90px,24vw,140px);--r:14deg;--dl:56%;--dt:102%;--dw:150px;--z:3"><img src="img/mat-regular.webp" alt="" width="220" height="219"></div>
+    <div class="loose dsk" data-drag data-kind="pol" style="--l:0;--t:0;--dl:76%;--dt:100%;--dw:170px;--r:-9deg;--z:5"><img src="img/dial-6oct.webp" alt="" width="285" height="345"></div>
+  </section>
+
+  <!-- ===================== 5. THE MORNING AFTER ===================== -->
+  <section class="cluster" id="morning" data-x="0.6" aria-labelledby="h-morning">
+    <div class="inner grid2">
+      <div class="notecol">
+        <div class="paper lined tape r" style="--r:-1.4deg" data-drag="mouse" data-kind="note">
+          <span class="tag">The morning after</span>
+          <h2 class="big" id="h-morning">The morning after, someone checks in.</h2>
+          <p>The Damage Report writes the night up in the landlord's dry hand, and shows who might want a check-in. Looking out for each other, not keeping score.</p>
+        </div>
+      </div>
+      <figure class="clip" style="--r:2.2deg;margin:0 auto" data-drag="mouse" data-kind="note">
+        <div class="cl"><img src="img/clip-damage.webp" alt="A real Damage Report from the app, the landlord's verdict: Ollie opened the tab alone with a Madri, which is either confidence or nobody else had arrived yet. Nobody else had arrived yet." width="560" height="260"></div>
+        <figcaption class="cap-line">from the morning-after report</figcaption>
+      </figure>
+    </div>
+    <div class="loose" data-drag data-kind="mat" style="--l:72%;--t:-2%;--w:clamp(90px,24vw,140px);--r:9deg;--dl:6%;--dt:8%;--dw:150px;--z:3"><img src="img/mat-breakfast_club.webp" alt="" width="220" height="220"></div>
+    <div class="loose" data-drag data-kind="mat" style="--l:-8%;--t:92%;--w:clamp(90px,24vw,140px);--r:-7deg;--dl:88%;--dt:74%;--dw:150px;--z:3"><img src="img/mat-loyal_soldier.webp" alt="" width="220" height="218"></div>
+    <i class="ring" style="--l:58%;--t:90%;--s:130px;--dl:44%;--dt:78%" aria-hidden="true"></i>
+      <div class="loose" data-drag data-kind="pol" style="--l:8%;--t:101%;--w:clamp(110px,30vw,190px);--r:7deg;--dl:58%;--dt:100%;--dw:200px;--z:5"><img src="img/pol-4oct-gang.webp" alt="" width="487" height="616"></div>
+  </section>
+
+  <!-- ===================== 6. JOIN + PRIVACY ===================== -->
+  <section class="cluster" id="join" data-x="-0.08" aria-labelledby="h-join">
+    <div class="inner">
+      <div class="paper tape" style="--r:-1deg;max-width:640px" data-drag="mouse" data-kind="note">
+        <span class="tag">Pull up a chair</span>
+        <h2 class="big" id="h-join">Three steps to your table.</h2>
+      </div>
+      <ol class="tickets">
+        <li class="ticket" style="--r:-2deg" data-drag="mouse" data-kind="note"><div class="no"><small>NO.</small><b>1</b></div><div class="tx"><h3>Get the app</h3><p>From the App Store, on iPhone.</p></div></li>
+        <li class="ticket" style="--r:1.5deg" data-drag="mouse" data-kind="note"><div class="no"><small>NO.</small><b>2</b></div><div class="tx"><h3>Pick a nickname</h3><p>And an avatar. No sign-up form.</p></div></li>
+        <li class="ticket" style="--r:-1deg" data-drag="mouse" data-kind="note"><div class="no"><small>NO.</small><b>3</b></div><div class="tx"><h3>Enter the pub code</h3><p>A short code for your group. You're in.</p></div></li>
+      </ol>
+      <div class="card" style="--r:1.6deg;max-width:470px;margin:34px 0 0 auto" data-drag="mouse" data-kind="note">
+        <h3>Private by design</h3>
+        <ul>
+          <li>No accounts, no email, no passwords.</li>
+          <li>No public feed. Nothing is discoverable.</li>
+          <li>Just your group, behind one short pub code.</li>
+          <li>Offline-first, so a dead spot in the back room doesn't lose the night.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="loose" data-drag data-kind="mat" style="--l:-10%;--t:76%;--w:clamp(90px,24vw,140px);--r:-9deg;--dl:6%;--dt:66%;--dw:160px;--z:3"><img src="img/mat-early_doors.webp" alt="" width="220" height="217"></div>
+    <div class="loose" data-drag data-kind="mat" style="--l:78%;--t:3%;--w:clamp(80px,22vw,130px);--r:11deg;--dl:84%;--dt:12%;--dw:150px;--z:3"><img src="img/mat-halo.webp" alt="" width="220" height="209"></div>
+    <i class="ring" style="--l:40%;--t:94%;--s:120px;--dl:30%;--dt:84%" aria-hidden="true"></i>
+      <div class="loose" data-drag data-kind="cap" style="--l:64%;--t:104%;--w:clamp(50px,14vw,74px);--dl:64%;--dt:104%;--z:6"><img src="img/cap-cider.webp" alt="" width="180" height="180"></div>
+    <div class="loose dsk" data-drag data-kind="pol" style="--l:0;--t:0;--dl:22%;--dt:100%;--dw:170px;--r:11deg;--z:5"><img src="img/pol-25oct.webp" alt="" width="305" height="398"></div>
+  </section>
+
+  <!-- ===================== 7. DOWNLOAD + FOOTER ===================== -->
+  <section class="cluster close" id="download" data-x="0.5" aria-labelledby="h-dl">
+    <div class="inner foot-row">
+      <div class="paper main tape l" style="--r:1.2deg" data-drag="mouse" data-kind="note">
+        <span class="tag">Last orders</span>
+        <h2 class="big" id="h-dl">Get your lot round the same table.</h2>
+        <p>Coming soon to the App Store, for iPhone. This is where the download goes the day it's live.</p>
+        <div class="cta-row">
+          <!-- [LINK TBC: App Store URL goes here, app id 6803027948 pending approval] -->
+          <a class="badge" href="#download"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg><span><small>Download on the</small><strong>App Store</strong></span></a>
+          <button class="share" type="button" data-share><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/></svg>Send this to your mates</button>
+        </div>
+        <p class="sharelinks">Or send it by
+          <a id="sh-wa" href="https://wa.me/?text=" rel="noopener" target="_blank">WhatsApp</a>
+          <a id="sh-sms" href="sms:?&amp;body=">text</a>
+          <a id="sh-mail" href="mailto:?subject=">email</a>
+        </p>
+      </div>
+      <footer class="receipt" role="contentinfo" style="--r:-2deg" data-drag="mouse" data-kind="note">
+        <div class="head">The Snug<span class="wm">Last Orders</span>Your tab</div>
+        <hr>
+        <ul>
+          <li><a href="https://james-crisford.github.io/last-orders-legal/privacy-policy.html">Privacy policy</a><span>01</span></li>
+          <li><a href="https://james-crisford.github.io/last-orders-legal/support.html">Support</a><span>02</span></li>
+        </ul>
+        <hr>
+        <p class="small" style="margin:0">18+ only. For people of legal drinking age. Please drink responsibly.</p>
+        <hr>
+        <ul><li><span>Made in the UK</span><span>2026</span></li></ul>
+        <p class="small" style="margin:10px 0 0;text-align:center">Mind how you go.</p>
+      </footer>
+    </div>
+    <div class="loose" data-drag data-kind="cap" style="--l:80%;--t:-1%;--w:clamp(50px,14vw,74px);--dl:92%;--dt:14%;--z:6"><img src="img/cap-stout.webp" alt="" width="180" height="180"></div>
+    <div class="loose dsk" data-drag data-kind="pol" style="--l:0;--t:0;--dl:2%;--dt:6%;--dw:170px;--r:-12deg;--z:5"><img src="img/dial-18oct.webp" alt="" width="285" height="345"></div>
+    <i class="ring" style="--l:-6%;--t:60%;--s:130px;--dl:56%;--dt:80%" aria-hidden="true"></i>
+  </section>
+</div>
+</div>
+<div class="lamp" aria-hidden="true"></div>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+var root=document.documentElement, CAM=root.classList.contains('cam');
+var RM=false; try{RM=matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
+var vp=document.getElementById('viewport'), plane=document.getElementById('plane'), wood=document.getElementById('wood'), main=document.getElementById('table');
+var secs=[].slice.call(document.querySelectorAll('.cluster'));
+var W=innerWidth, H=innerHeight, lastW=0, segs=[], scrollLen=0;
+var cam={x:0,y:0,s:1}, tgt={x:0,y:0,s:1}, bounds={x0:0,y0:0,x1:1,y1:1};
+
+/* ---------------- share ---------------- */
+var shakeT=0;
+var shareText="Found this: Last Orders, an app for our lot to keep the good nights together, even when we're miles apart. Have a look:";
+function pageUrl(){return location.href.split('#')[0];}
+(function(){var u=pageUrl(),t=shareText+' '+u;
+  document.getElementById('sh-wa').href='https://wa.me/?text='+encodeURIComponent(t);
+  document.getElementById('sh-sms').href='sms:?&body='+encodeURIComponent(t);
+  document.getElementById('sh-mail').href='mailto:?subject='+encodeURIComponent('Last Orders')+'&body='+encodeURIComponent(t);})();
+var toastT;
+function toast(m){var el=document.getElementById('toast');el.textContent=m;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){el.classList.remove('on');},2200);}
+[].forEach.call(document.querySelectorAll('[data-share]'),function(b){b.addEventListener('click',function(){
+  var u=pageUrl();
+  if(navigator.share){navigator.share({title:'Last Orders',text:shareText,url:u}).catch(function(){});}
+  else{window.open('https://wa.me/?text='+encodeURIComponent(shareText+' '+u),'_blank','noopener');}
+});});
+
+/* ---------------- camera layout ---------------- */
+function layout(){
+  W=vp.clientWidth||innerWidth; H=CAM?vp.clientHeight:innerHeight;
+  if(!CAM){collectHomes();return;}
+  root.style.setProperty('--W',W+'px'); root.style.setProperty('--H',H+'px');
+  var y=0, gap=Math.round(H*0.22), minX=0, maxX=0;
+  secs.forEach(function(s){
+    var x=Math.round(parseFloat(s.dataset.x||0)*W);
+    s.style.left=x+'px'; s.style.top=y+'px';
+    s._x=x; s._y=y; s._h=s.offsetHeight;
+    minX=Math.min(minX,x); maxX=Math.max(maxX,x);
+    y+=s._h+gap;
+  });
+  var planeH=y-gap;
+  bounds={x0:minX-W*0.25,y0:-H*0.3,x1:maxX+W*1.25,y1:planeH+H*0.3};
+  var m=W*0.9, mh=H*0.9;
+  wood.style.left=(minX-m)+'px'; wood.style.top=(-mh)+'px';
+  wood.style.width=(maxX-minX+W+2*m)+'px'; wood.style.height=(planeH+2*mh)+'px';
+  // camera path: hold on each cluster (scroll through it if taller than the screen), then travel
+  segs=[]; var s0=0, travel=Math.round(H*0.9);
+  secs.forEach(function(s,i){
+    var cx=s._x+W/2, a, b, len;
+    if(s._h<=H){a=b=s._y+s._h/2; len=i===0?Math.round(H*0.08):Math.round(H*0.32);}
+    else{a=s._y+H/2; b=s._y+s._h-H/2; len=b-a+Math.round(H*(i===0?0.05:0.2));}
+    s._hold={s:s0,x:cx,a:a,b:b,len:len};
+    segs.push({t:'hold',s0:s0,s1:s0+len,x:cx,a:a,b:b,core:b-a});
+    s0+=len;
+    if(i<secs.length-1){segs.push({t:'go',s0:s0,s1:s0+travel,i:i});s0+=travel;}
+  });
+  // wire travel ends
+  segs.forEach(function(g,k){if(g.t==='go'){var p=segs[k-1],n=segs[k+1];g.fx=p.x;g.fy=p.b;g.tx=n.x;g.ty=n.a;}});
+  scrollLen=s0;
+  main.style.height=(scrollLen+H)+'px';
+  collectHomes();
+  setTarget(); cam.x=tgt.x;cam.y=tgt.y;cam.s=tgt.s; applyCam();
+}
+function ease(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
+var DIP=0.2;
+function setTarget(){
+  var sy=Math.max(0,Math.min(scrollLen,window.scrollY||0));
+  for(var k=0;k<segs.length;k++){var g=segs[k]; if(sy<=g.s1||k===segs.length-1){
+    var t=Math.max(0,Math.min(1,(sy-g.s0)/(g.s1-g.s0||1)));
+    if(g.t==='hold'){tgt.x=g.x; var core=g.core; if(core>0){var c=Math.min(1,(sy-g.s0)/core); tgt.y=g.a+(g.b-g.a)*Math.max(0,c);} else tgt.y=g.a; tgt.s=1;}
+    else{var e=ease(t); tgt.x=g.fx+(g.tx-g.fx)*e; tgt.y=g.fy+(g.ty-g.fy)*e; tgt.s=1-(W<700?DIP+0.06:DIP)*Math.sin(Math.PI*t);}
+    break;}}
+}
+function applyCam(){
+  var jx=0,jy=0,st=performance.now()-shakeT; if(shakeT&&st<380){var amp=7*(1-st/380); jx=Math.sin(st*0.11)*amp; jy=Math.cos(st*0.093)*amp*0.6;}
+  plane.style.transform='translate3d('+(W/2-cam.x*cam.s+jx).toFixed(2)+'px,'+(H/2-cam.y*cam.s+jy).toFixed(2)+'px,0) scale('+cam.s.toFixed(4)+')';
+}
+function camTick(){
+  var dx=tgt.x-cam.x, dy=tgt.y-cam.y, ds=tgt.s-cam.s, k=0.2;
+  if(Math.abs(dx)+Math.abs(dy)>0.3||Math.abs(ds)>0.0005){cam.x+=dx*k;cam.y+=dy*k;cam.s+=ds*k;applyCam();}
+  else if(dx||dy||ds){cam.x=tgt.x;cam.y=tgt.y;cam.s=tgt.s;applyCam();}
+  else if(shakeT&&performance.now()-shakeT<420){applyCam();}
+}
+function currentIdx(){var best=0,sy=window.scrollY;secs.forEach(function(s,i){if(s._hold&&sy>=s._hold.s-H*0.45)best=i;});return best;}
+function goTo(i,el){
+  if(!CAM){var s=secs[i]; (el||s).scrollIntoView({behavior:RM?'auto':'smooth',block:'start'});return;}
+  var h=secs[i]._hold, y=h.s;
+  if(el&&h.b>h.a){var r=0,n=el;while(n&&n!==secs[i]){r+=n.offsetTop;n=n.offsetParent;} var want=secs[i]._y+r+el.offsetHeight/2; y=h.s+Math.max(0,Math.min(h.b-h.a,want-h.a));}
+  window.scrollTo({top:y,behavior:'smooth'});
+}
+document.addEventListener('click',function(e){
+  var a=e.target.closest('a[data-go],a[href^="#"]'); if(!a)return;
+  var id=(a.getAttribute('href')||'').slice(1); var i=a.dataset.go!=null?+a.dataset.go:secs.findIndex(function(s){return s.id===id;});
+  if(i<0)return; e.preventDefault(); goTo(i); if(history.replaceState)history.replaceState(null,'','#'+secs[i].id);
+});
+if(CAM){
+  vp.addEventListener('scroll',function(){vp.scrollTop=0;vp.scrollLeft=0;});
+  document.addEventListener('focusin',function(e){var s=e.target.closest&&e.target.closest('.cluster'); if(!s)return; var i=secs.indexOf(s);
+    vp.scrollTop=0;vp.scrollLeft=0; var h=s._hold; var sy=window.scrollY; if(sy<h.s-2||sy>h.s+h.len+2||h.b>h.a)goTo(i,e.target.closest('.paper,.card,.receipt,.ticket,figure,.badge')||e.target);});
+}
+// nav highlight
+var navLinks=[].slice.call(document.querySelectorAll('.bar nav a'));
+function markNav(){var i=CAM?currentIdx():0; navLinks.forEach(function(a){a.setAttribute('aria-current',(+a.dataset.go===i)?'true':'false');});}
+
+/* ---------------- bodies: drag, fling, spin, settle ---------------- */
+var bodies=[], Z=60, moving=false;
+var FR={pol:0.905,stamp:0.89,mat:0.91,cap:0.957,phone:0.86,note:0.86};
+[].forEach.call(document.querySelectorAll('[data-drag]'),function(el){
+  var b={el:el,kind:el.dataset.kind||'pol',x:0,y:0,a:0,vx:0,vy:0,va:0,hx:0,hy:0,anim:null,mouseOnly:el.dataset.drag==='mouse'};
+  b.a0=parseFloat(getComputedStyle(el).getPropertyValue('--r'))||0;
+  if(el.classList.contains('loose-static')) b.a0=1.5;
+  b.z=parseInt(getComputedStyle(el).zIndex)||5;
+  el._b=b; bodies.push(b);
+  [].forEach.call(el.querySelectorAll('img'),function(i){i.draggable=false;});
+});
+function render(b){
+  b.el.style.transform='translate3d('+b.x.toFixed(1)+'px,'+b.y.toFixed(1)+'px,0) rotate('+(b.a0+b.a).toFixed(2)+'deg)'+(b.held?' scale(1.045)':'');
+}
+function collectHomes(){
+  var saved=plane.style.transform; if(CAM)plane.style.transform='none';
+  var pr=plane.getBoundingClientRect();
+  bodies.forEach(function(b){
+    if(!b.el.offsetParent){b.off=true;return;} b.off=false;
+    var r=b.el.getBoundingClientRect();
+    b.hx=r.left+r.width/2-pr.left-b.x; b.hy=r.top+r.height/2-pr.top-b.y;
+    b.w=b.el.offsetWidth; b.h=b.el.offsetHeight; b.rad=b.w/2;
+  });
+  if(CAM)plane.style.transform=saved;
+}
+function toPlane(cx,cy){
+  if(CAM)return{x:(cx-(W/2-cam.x*cam.s))/cam.s,y:(cy-(H/2-cam.y*cam.s))/cam.s};
+  var pr=plane.getBoundingClientRect();return{x:cx-pr.left,y:cy-pr.top};
+}
+var drag=null;
+plane.addEventListener('pointerdown',function(e){
+  var el=e.target.closest('[data-drag]'); if(!el||e.button>0)return;
+  if(e.target.closest('a,button,input,label'))return;
+  var b=el._b; if(!b||b.off)return;
+  if(b.mouseOnly&&e.pointerType!=='mouse')return;
+  e.preventDefault();
+  try{el.setPointerCapture(e.pointerId);}catch(_){}
+  b.anim=null; b.vx=b.vy=b.va=0; b.held=true; el.classList.add('held'); el.style.zIndex=++Z;
+  var p=toPlane(e.clientX,e.clientY);
+  drag={b:b,id:e.pointerId,p:p,rx:p.x-(b.hx+b.x),ry:p.y-(b.hy+b.y),t0:performance.now(),moved:0,hist:[{t:performance.now(),x:b.x,y:b.y,a:b.a}]};
+  render(b); hideHints();
+});
+plane.addEventListener('pointermove',function(e){
+  if(!drag||e.pointerId!==drag.id)return;
+  var b=drag.b,p=toPlane(e.clientX,e.clientY),dx=p.x-drag.p.x,dy=p.y-drag.p.y;
+  drag.moved+=Math.abs(dx)+Math.abs(dy);
+  // paper-on-a-table torque: pulling off-centre swings it round
+  var rx=drag.rx,ry=drag.ry,r2=rx*rx+ry*ry,I=(b.w*b.w+b.h*b.h)*0.09;
+  var k=b.kind==='cap'?0.0:(b.kind==='phone'||b.kind==='note'?0.35:0.8);
+  var dth=k*(rx*dy-ry*dx)/(r2+I);
+  if(b.kind!=='cap'){var c=Math.cos(dth),s=Math.sin(dth); drag.rx=rx*c-ry*s; drag.ry=rx*s+ry*c; b.a+=dth*57.2958;}
+  b.x=p.x-drag.rx-b.hx; b.y=p.y-drag.ry-b.hy; drag.p=p;
+  var now=performance.now(); drag.hist.push({t:now,x:b.x,y:b.y,a:b.a}); if(drag.hist.length>8)drag.hist.shift();
+  render(b);
+});
+function endDrag(e){
+  if(!drag||e.pointerId!==drag.id)return;
+  var b=drag.b,h=drag.hist,now=performance.now();
+  var o=h[0]; for(var i=h.length-1;i>=0;i--){if(now-h[i].t>90){o=h[i];break;}}
+  var dt=Math.max(16,now-o.t);
+  if(!RM&&now-h[h.length-1].t<70){b.vx=(b.x-o.x)/dt;b.vy=(b.y-o.y)/dt;b.va=(b.a-o.a)/dt;}
+  var sp=Math.hypot(b.vx,b.vy),mx=b.kind==='cap'?3.2:2.4; if(sp>mx){b.vx*=mx/sp;b.vy*=mx/sp;}
+  if(b.kind==='cap'&&sp>0.05)b.va=(Math.random()<.5?-1:1)*sp*0.6;
+  if(drag.moved<5&&now-drag.t0<280&&!RM){b.va=(Math.random()-.5)*0.5;}
+  b.held=false; b.el.classList.remove('held'); render(b);
+  drag=null; kick();
+}
+plane.addEventListener('pointerup',endDrag); plane.addEventListener('pointercancel',endDrag);
+
+function step(dt){
+  var any=false, caps=[];
+  bodies.forEach(function(b){
+    if(b.off)return;
+    if(b.anim){var A=b.anim,t=(performance.now()-A.t0)/A.d; if(t<0){any=true;return;}
+      if(t>=1){b.x=A.x1;b.y=A.y1;b.a=A.a1;b.anim=null;b.el.classList.remove('falling');render(b);return;}
+      var e=1-Math.pow(1-t,2.6); b.x=A.x0+(A.x1-A.x0)*e; b.y=A.y0+(A.y1-A.y0)*e; b.a=A.a0+(A.a1-A.a0)*e;
+      var lift=A.drop?(1+0.6*Math.pow(1-Math.min(1,t*1.25),2)):1;
+      b.el.style.transform='translate3d('+b.x.toFixed(1)+'px,'+b.y.toFixed(1)+'px,0) rotate('+(b.a0+b.a).toFixed(2)+'deg) scale('+lift.toFixed(3)+')';
+      any=true; return;}
+    if(b.held){any=true;return;}
+    if(b.kind==='cap')caps.push(b);
+    var sp=Math.abs(b.vx)+Math.abs(b.vy)+Math.abs(b.va)*0.3;
+    if(sp<0.004){b.vx=b.vy=b.va=0;return;}
+    any=true;
+    b.x+=b.vx*dt; b.y+=b.vy*dt; b.a+=b.va*dt;
+    var f=Math.pow(FR[b.kind]||0.9,dt/16); b.vx*=f; b.vy*=f; b.va*=Math.pow(0.9,dt/16);
+    // table edges
+    var cx=b.hx+b.x, cy=b.hy+b.y, bx0=CAM?bounds.x0:20, bx1=CAM?bounds.x1:W-20, by0=CAM?bounds.y0:-1e9, by1=CAM?bounds.y1:1e9;
+    if(cx<bx0){b.x+=bx0-cx;b.vx=Math.abs(b.vx)*0.45;} if(cx>bx1){b.x-=cx-bx1;b.vx=-Math.abs(b.vx)*0.45;}
+    if(cy<by0){b.y+=by0-cy;b.vy=Math.abs(b.vy)*0.45;} if(cy>by1){b.y-=cy-by1;b.vy=-Math.abs(b.vy)*0.45;}
+    render(b);
+  });
+  // caps knock into each other
+  var capsAll=bodies.filter(function(b){return b.kind==='cap'&&!b.off&&!b.anim;});
+  for(var i=0;i<capsAll.length;i++)for(var j=i+1;j<capsAll.length;j++){
+    var A=capsAll[i],B=capsAll[j],ax=A.hx+A.x,ay=A.hy+A.y,bx=B.hx+B.x,by=B.hy+B.y,dx=bx-ax,dy=by-ay,d=Math.hypot(dx,dy),m=(A.rad+B.rad)*0.92;
+    if(d>0&&d<m){var nx=dx/d,ny=dy/d,ov=m-d;
+      if(A.held){B.x+=nx*ov;B.y+=ny*ov;} else if(B.held){A.x-=nx*ov;A.y-=ny*ov;} else {A.x-=nx*ov/2;A.y-=ny*ov/2;B.x+=nx*ov/2;B.y+=ny*ov/2;}
+      var rv=(B.vx-A.vx)*nx+(B.vy-A.vy)*ny;
+      if(rv<0){var jj=-(1+0.8)*rv/2; if(!A.held){A.vx-=jj*nx;A.vy-=jj*ny;A.va-=jj*0.4;} if(!B.held){B.vx+=jj*nx;B.vy+=jj*ny;B.va+=jj*0.4;}
+        if(A.held&&!B.held){B.vx+=jj*nx;B.vy+=jj*ny;}}
+      render(A);render(B);any=true;}
+  }
+  return any;
+}
+var last=0, raf=0;
+function loop(t){
+  var dt=Math.min(32,last?t-last:16); last=t;
+  var any=step(dt);
+  if(CAM){camTick();}
+  if(any||CAM)raf=requestAnimationFrame(loop); else {raf=0;last=0;}
+}
+function kick(){if(!raf){last=0;raf=requestAnimationFrame(loop);}}
+
+/* ---------------- the spill ---------------- */
+function spill(fromPile){
+  var list=bodies.filter(function(b){return b.el.hasAttribute('data-spill')&&!b.off;});
+  var hero=secs[0], px=(CAM?hero._x:0)+W*(W<900?0.5:0.7), py=(CAM?hero._y:0)+H*(W<900?0.7:0.42);
+  var now=performance.now();
+  list.forEach(function(b,i){
+    var sx=fromPile?px-b.hx+(Math.random()-.5)*30:b.x, sy=fromPile?py-b.hy-H*0.15+(Math.random()-.5)*30:b.y;
+    b.x=sx;b.y=sy; b.vx=b.vy=b.va=0;
+    b.anim={t0:now+120+i*120,d:1500+Math.random()*500,x0:sx,y0:sy,x1:0,y1:0,a0:(Math.random()<.5?-1:1)*(40+Math.random()*80),a1:0,drop:true};
+    b.a=b.anim.a0; b.el.style.zIndex=b.z;
+    b.el.style.transform='translate3d('+sx+'px,'+sy+'px,0) rotate('+(b.a0+b.a)+'deg) scale(1.55)';
+  });
+  kick();
+}
+function tidy(){
+  var now=performance.now();
+  bodies.forEach(function(b,i){ if(b.off)return; if(Math.abs(b.x)+Math.abs(b.y)+Math.abs(b.a)<0.5)return;
+    b.vx=b.vy=b.va=0; b.anim={t0:now+Math.min(i*12,300),d:RM?1:700,x0:b.x,y0:b.y,x1:0,y1:0,a0:b.a,a1:0}; b.el.style.zIndex=b.z;});
+  kick(); toast('Table tidied.');
+}
+document.getElementById('tidy').addEventListener('click',tidy);
+function bump(){
+  var i=CAM?currentIdx():0, sec=secs[i];
+  bodies.forEach(function(b){ if(b.off||b.held)return; var own=b.el.closest('.cluster')===sec; if(!own)return;
+    if(b.kind==='note'||b.kind==='phone'){b.va=(Math.random()-.5)*0.06; b.vx=(Math.random()-.5)*0.35; b.vy=(Math.random()-.5)*0.35;}
+    else{var ang=Math.random()*6.283, sp=0.7+Math.random()*1.1; b.vx=Math.cos(ang)*sp; b.vy=Math.sin(ang)*sp; b.va=(Math.random()-.5)*0.9;}
+    b.anim=null;});
+  shakeT=performance.now(); kick();
+}
+document.getElementById('bump').addEventListener('click',bump);
+var hinted=false; function hideHints(){if(hinted)return;hinted=true;}
+
+/* ---------------- My Pub frame sequence (real app frames) ---------------- */
+(function(){
+  var box=document.getElementById('pubseq'); if(!box)return;
+  var fr=[].slice.call(box.querySelectorAll('img')), i=0, tm=0, on=false;
+  if(RM)return; // reduced motion: hold on the developed polaroid
+  function next(){fr[i].classList.remove('on'); i=(i+1)%fr.length; fr[i].classList.add('on'); tm=setTimeout(next,+fr[i].dataset.ms||600);}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting&&!on){on=true;tm=setTimeout(next,+fr[i].dataset.ms);} else if(!e.isIntersecting&&on){on=false;clearTimeout(tm);}
+  });},{threshold:0.25});
+  io.observe(box);
+})();
+
+/* ---------------- boot ---------------- */
+function onScroll(){ if(CAM){setTarget();kick();} markNav(); }
+window.addEventListener('scroll',onScroll,{passive:true});
+var rT;
+window.addEventListener('resize',function(){clearTimeout(rT);rT=setTimeout(function(){
+  var nw=innerWidth; if(Math.abs(nw-lastW)>2){bodies.forEach(function(b){b.x=b.y=b.a=0;b.vx=b.vy=b.va=0;b.anim=null;render(b);}); lastW=nw;}
+  layout(); setTarget(); kick();},120);});
+function boot(){
+  lastW=innerWidth; layout();
+  bodies.forEach(render);
+  if(location.hash){var i=secs.findIndex(function(s){return '#'+s.id===location.hash;}); if(i>0&&CAM){window.scrollTo(0,secs[i]._hold.s);setTarget();cam.x=tgt.x;cam.y=tgt.y;cam.s=tgt.s;applyCam();}}
+  if(!RM&&(window.scrollY||0)<40&&!/[?&]nospill/.test(location.search))spill(true);
+  markNav(); kick();
+  window.__lo={spill:spill,tidy:tidy,bodies:bodies,cam:cam,segs:segs,goTo:goTo,fling:function(n,vx,vy){var b=bodies[n];b.vx=vx;b.vy=vy;b.va=0.2;kick();}};
+}
+if(document.fonts&&document.fonts.ready){var done=false;document.fonts.ready.then(function(){if(!done){done=true;boot();}});setTimeout(function(){if(!done){done=true;boot();}},1500);}else boot();
+})();
+</script>
+</body>
+</html>

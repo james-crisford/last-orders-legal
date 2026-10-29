@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="en-GB">
+<head><meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Last Orders - your mates, in real time</title>
+<meta name="description" content="Last Orders is an iPhone app for one private group of mates. One live board, everyone on the same night, wherever they are.">
+<meta name="theme-color" content="#182a23">
+<link rel="icon" href="img/icon.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:ital,opsz,wght@1,9..144,600;1,9..144,800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+:root{
+  --board:#182a23; --board2:#14231d; --ground:#16322A; --deep:#122A23; --panel:#1D2B26; --card:#243B33;
+  --amber:#E8A13C; --brass:#C89B4A; --cream:#F3E9D2; --dim:#9DB5A9; --ink:#14251F; --gold:#E7C86A;
+  --chalk:#F1EAD8; --fw:6px; --gut:16px;
+  --hand:"Caveat","Segoe Print","Bradley Hand","Chalkboard SE","Comic Sans MS",cursive;
+  --disp:"Fraunces",Georgia,"Times New Roman",serif;
+  --body:"Work Sans",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .95 0 0 0 0 .91 0 0 0 0 .82 .16 0 0 0 -.05'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --chalkmask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 5.6 0 0 0 -1.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E");
+  --arcs:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='16'/%3E%3C/filter%3E%3Cg fill='none' stroke='%23F3E9D2' stroke-opacity='.045' stroke-width='80' stroke-linecap='round' filter='url(%23b)'%3E%3Cpath d='M60 150 C 220 60 420 90 560 140 S 760 220 780 170'/%3E%3Cpath d='M90 430 C 260 360 430 390 620 470'/%3E%3Cpath d='M520 300 C 600 260 700 280 760 330' stroke-opacity='.03'/%3E%3C/g%3E%3C/svg%3E");
+}
+@media (min-width:760px){ :root{ --fw:14px; --gut:40px; } }
+*{box-sizing:border-box}
+html,body{margin:0;overflow-x:clip}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+body{
+  background-color:var(--board);
+  background-image:var(--noise), radial-gradient(120% 80% at 50% 0%, #1d3229 0%, var(--board) 55%, var(--board2) 100%);
+  background-size:220px 220px, 100% 100%;
+  color:var(--cream); font-family:var(--body); font-size:17px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--gold)}
+:focus-visible{outline:2px dashed var(--gold);outline-offset:4px;border-radius:6px}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* the wooden frame round the whole board */
+.frame{position:fixed;inset:0;z-index:60;pointer-events:none;border:var(--fw) solid #5a3a22;
+  border-image:linear-gradient(135deg,#7a5130,#4b2f1a 22%,#6e4728 48%,#3f2715 70%,#73502f) 1;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.55), inset 0 8px 24px rgba(0,0,0,.45), inset 0 -8px 24px rgba(0,0,0,.35)}
+.screw{position:fixed;z-index:61;width:calc(var(--fw) * .7);height:calc(var(--fw) * .7);border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 35% 35%,#f0d58f,#b78a3c 55%,#6d5020);box-shadow:0 1px 1px rgba(0,0,0,.6)}
+.screw.a{top:calc(var(--fw)*.15);left:calc(var(--fw)*.15)} .screw.b{top:calc(var(--fw)*.15);right:calc(var(--fw)*.15)}
+.screw.c{bottom:calc(var(--fw)*.15);left:calc(var(--fw)*.15)} .screw.d{bottom:calc(var(--fw)*.15);right:calc(var(--fw)*.15)}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 calc(var(--gut) + var(--fw))}
+section{position:relative}
+.smudge::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:var(--arcs) center/100% 100% no-repeat,
+    radial-gradient(45% 30% at 18% 28%, rgba(243,233,210,.05), transparent 70%),
+    radial-gradient(35% 25% at 85% 75%, rgba(243,233,210,.04), transparent 70%)}
+.smudge.flip::before{transform:scaleX(-1)}
+section > .wrap{position:relative;z-index:1}
+
+/* chalk texture */
+.chalk{-webkit-mask-image:var(--chalkmask);mask-image:var(--chalkmask);-webkit-mask-size:160px;mask-size:160px}
+svg text{font-family:var(--hand)}
+.c-cream{fill:var(--chalk)} .c-gold{fill:var(--gold)} .c-dim{fill:var(--dim)} .c-amber{fill:var(--amber)}
+.js svg.write text{visibility:hidden}
+.ghost{pointer-events:none}
+
+/* doodles that draw themselves */
+.doodle{overflow:visible}
+.doodle path,.doodle circle,.doodle ellipse,.doodle line,.doodle polyline{fill:none;stroke:var(--chalk);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.doodle .g{stroke:var(--gold)} .doodle .a{stroke:var(--amber)} .doodle .d{stroke:var(--dim)} .doodle .thin{stroke-width:1.8}
+.js [data-draw] path,.js [data-draw] circle,.js [data-draw] ellipse,.js [data-draw] line{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset var(--t,.7s) cubic-bezier(.5,.1,.3,1) var(--d,0s)}
+.js [data-draw].in path,.js [data-draw].in circle,.js [data-draw].in ellipse,.js [data-draw].in line{stroke-dashoffset:0}
+
+/* header */
+.top{position:relative;z-index:5;padding-top:calc(var(--fw) + 14px)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.wordmark{font-family:var(--disp);font-style:italic;font-weight:800;font-size:28px;line-height:1;letter-spacing:-.01em;text-decoration:none;
+  color:var(--gold);background:linear-gradient(180deg,#f3d98a 0%,#e1b85d 45%,#b88a3c 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 1px 0 rgba(0,0,0,.5))}
+.wordmark small{display:block;font-family:var(--body);font-style:normal;font-weight:600;font-size:10px;letter-spacing:.32em;text-transform:uppercase;-webkit-text-fill-color:var(--dim);margin-top:6px}
+.toplink{font-family:var(--hand);font-size:22px;color:var(--chalk);text-decoration:none;padding:6px 10px;border-bottom:2px solid rgba(241,234,216,.35)}
+
+/* hero */
+.hero{padding:18px 0 40px;overflow:clip}
+.hero .wrap{display:grid;gap:8px}
+.kicker{margin:6px 0 0;font-family:var(--body);font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+#headline{width:100%;max-width:640px;height:auto;display:block;margin:2px 0 0}
+.lede{font-size:17px;max-width:30em;margin:4px 0 0;color:var(--cream)}
+.lede b{color:var(--gold);font-weight:600}
+.cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 14px;margin-top:14px}
+.badge{display:inline-flex;align-items:center;gap:10px;background:#000;color:#fff;text-decoration:none;border:1.5px solid #a6a6a6;border-radius:12px;padding:8px 14px 8px 12px;min-height:54px;line-height:1.05;box-shadow:0 6px 16px rgba(0,0,0,.35);transition:transform .2s}
+.badge:hover{transform:translateY(-2px) rotate(-1deg)}
+.badge svg{width:24px;height:24px;flex:none}
+.badge .s{display:block;font-size:11px;letter-spacing:.02em}
+.badge .b{display:block;font-size:22px;font-weight:600;letter-spacing:-.01em}
+.sharebtn{font:inherit;font-family:var(--hand);font-size:23px;font-weight:700;line-height:1.1;color:var(--ink);background:var(--amber);border:0;border-radius:14px;padding:10px 16px;min-height:50px;cursor:pointer;
+  box-shadow:0 4px 0 #a8701f, 0 8px 18px rgba(0,0,0,.3);transform:rotate(-1.2deg);transition:transform .15s}
+.sharebtn:hover{transform:rotate(1deg) translateY(-1px)}
+.sharebtn:active{transform:translateY(3px);box-shadow:0 1px 0 #a8701f}
+.wipe-wrap{position:relative;z-index:8;margin-top:18px;max-width:560px}
+.wipe-stage{position:relative}
+#wipe{width:100%;height:auto;display:block;overflow:visible;position:relative;z-index:8}
+#wipe-fx{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:9}
+.landlord-sign{display:flex;align-items:center;gap:14px;margin-top:2px;font-family:var(--hand);font-size:20px;color:var(--dim)}
+.again{font:inherit;font-family:var(--hand);font-size:20px;color:var(--chalk);background:transparent;border:1.5px dashed rgba(241,234,216,.45);border-radius:999px;padding:3px 14px;cursor:pointer}
+.again[disabled]{opacity:.45;cursor:default}
+.hero-arrow{position:absolute;right:-8px;bottom:-56px;width:64px;height:64px;transform:rotate(18deg)}
+
+/* pinned prints */
+.pin{position:relative;margin:0;transform:rotate(var(--r,0deg))}
+.pin img{border-radius:22px;box-shadow:0 18px 40px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.4);background:var(--deep)}
+.pin.tape::before,.pin.tape::after{content:"";position:absolute;z-index:3;top:-12px;width:68px;height:24px;background:linear-gradient(180deg,rgba(240,214,160,.5),rgba(222,190,130,.42));box-shadow:0 1px 2px rgba(0,0,0,.2);
+  -webkit-mask:linear-gradient(90deg,transparent 0 2px,#000 2px calc(100% - 2px),transparent 0);}
+.pin.tape::before{left:6%;transform:rotate(-9deg)}
+.pin.tape::after{right:6%;transform:rotate(8deg)}
+.pin.tack::before{content:"";position:absolute;z-index:3;top:-9px;left:50%;width:22px;height:22px;margin-left:-11px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#fbe7a6,#c89b4a 50%,#6e5122);box-shadow:0 4px 5px rgba(0,0,0,.5)}
+.pin.fade img{-webkit-mask-image:linear-gradient(#000 78%,transparent 99%);mask-image:linear-gradient(#000 78%,transparent 99%)}
+.pin .over{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:2}
+.pin .frm{position:absolute;inset:-14px;width:calc(100% + 28px);height:calc(100% + 28px);overflow:visible;pointer-events:none}
+.hero-shot{justify-self:center;width:min(78%,330px);--r:2.5deg;margin-top:44px}
+
+/* chalk headings */
+.sec-head{margin:0 0 8px}
+.sec-head svg{display:block;width:100%;max-width:600px;height:auto;overflow:visible}
+.sub{color:var(--dim);margin:0 0 26px;font-size:16px;max-width:34em}
+.hand{font-family:var(--hand)}
+
+/* menu board */
+.menu{padding:56px 0 40px}
+.menu-title{text-align:center}
+.menu-title .sec-head svg{margin:0 auto;max-width:520px}
+.menu-title .sub{margin:0 auto 34px;text-align:center}
+.stars{display:block;margin:0 auto 4px;width:200px;height:30px}
+.items{list-style:none;margin:0;padding:0;display:grid;gap:62px}
+.item{display:grid;gap:22px;align-items:start}
+.item h3{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 8px;margin:0 0 6px;font-family:var(--hand);font-weight:700;font-size:34px;line-height:1.05;color:var(--chalk)}
+.item h3 .nm{flex:none}
+.item h3 .ld{flex:1 1 18px;min-width:18px;border-bottom:3px dotted rgba(241,234,216,.45);transform:translateY(-6px)}
+.item h3 .sv{flex:none;font-size:22px;font-weight:500;color:var(--gold)}
+.item p{margin:0;max-width:30em;color:var(--cream)}
+.item .pin{justify-self:center;width:min(76%,300px)}
+.item:nth-child(odd) .pin{--r:-2deg} .item:nth-child(even) .pin{--r:2.2deg}
+.textonly{grid-template-columns:84px 1fr;gap:14px}
+.textonly .cam{width:84px;height:70px;margin-top:6px}
+.pinned-up{margin-top:8px!important;font-size:22px}
+.pinned-up a{color:var(--gold);text-decoration-thickness:1px;text-underline-offset:4px}
+.also{margin:56px auto 0;max-width:40em;text-align:center;font-family:var(--hand);font-size:24px;line-height:1.3;color:var(--chalk)}
+.also span{color:var(--gold)}
+
+/* frame sequence player */
+.seqbox{justify-self:center;width:min(80%,320px);--r:-1.5deg}
+.seq{position:relative;border-radius:22px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.5);background:#1a3029}
+.seq img{border-radius:0;box-shadow:none;width:100%}
+.seq img+img{position:absolute;inset:0}
+.seq img{opacity:0}
+.seq img.on{opacity:1}
+.seqcap{margin:14px 0 0;text-align:center;font-family:var(--hand);font-size:24px;color:var(--gold);min-height:1.3em;transition:opacity .25s}
+
+/* story */
+.story{padding:60px 0 40px}
+.notes{display:grid;gap:34px;margin-top:10px}
+.note{display:grid;grid-template-columns:78px 1fr;gap:14px;align-items:start}
+.note svg{width:78px;height:78px}
+.note h3{margin:0;font-family:var(--hand);font-size:30px;line-height:1.1;font-weight:700;color:var(--chalk)}
+.note p{margin:4px 0 0;color:var(--cream)}
+.tally-box{margin:46px auto 0;max-width:520px;text-align:center}
+.tally-box .hand{font-size:26px;color:var(--dim);margin:0}
+#tally{width:100%;max-width:420px;height:auto;margin:6px auto 0;display:block}
+.tally-out{font-family:var(--hand);font-size:30px;color:var(--gold);margin:4px 0 0;opacity:0;transition:opacity .6s .2s}
+.tally-box.in .tally-out,.no-js .tally-out{opacity:1}
+
+/* how to join */
+.join{padding:60px 0 40px}
+.steps{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px}
+.step{display:grid;grid-template-columns:76px 1fr;gap:14px;align-items:center}
+.step .num{position:relative;width:76px;height:76px;display:grid;place-items:center;font-family:var(--hand);font-weight:700;font-size:44px;color:var(--gold)}
+.step .num svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.step h3{margin:0;font-family:var(--hand);font-size:32px;line-height:1.05;color:var(--chalk)}
+.step p{margin:2px 0 0;color:var(--dim);font-size:16px}
+.step-arrow{width:40px;height:42px;margin-left:18px}
+.join .fine{font-family:var(--hand);font-size:24px;color:var(--gold);margin:18px 0 0}
+
+/* house rules */
+.rules{padding:50px 0 50px}
+.rulebox{position:relative;max-width:620px;margin:0 auto;padding:34px 26px 30px}
+.rulebox > svg.frm{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.rulebox h2{margin:0 0 10px;text-align:center;font-family:var(--disp);font-style:italic;font-weight:800;font-size:40px;color:var(--chalk);letter-spacing:.01em}
+.rulebox ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.rulebox li{display:grid;grid-template-columns:26px 1fr;gap:10px;font-size:18px}
+.rulebox li::before{content:"x";font-family:var(--hand);font-weight:700;font-size:26px;line-height:.9;color:var(--amber)}
+.rulebox li.ok::before{content:"\2713";font-family:var(--body);font-size:20px;color:var(--gold)}
+.rulebox .sig{margin:18px 0 0;text-align:right;font-family:var(--hand);font-size:24px;color:var(--dim)}
+
+/* closing */
+.close{padding:60px 0 70px;text-align:center}
+.bell{width:120px;height:120px;margin:0 auto;display:block}
+.bell .swing{transform-origin:50px 14px;transform-box:view-box}
+.close.in .bell .swing{animation:ring 1.6s ease-in-out .4s 2}
+@keyframes ring{0%,100%{transform:rotate(0)}15%{transform:rotate(16deg)}35%{transform:rotate(-13deg)}55%{transform:rotate(9deg)}75%{transform:rotate(-5deg)}}
+.close .sec-head svg{margin:0 auto;max-width:560px}
+.close .sub{margin:4px auto 24px;text-align:center;font-size:18px;color:var(--cream)}
+.close .cta-row{justify-content:center}
+.soon{margin:14px 0 0;font-size:14px;color:var(--dim)}
+.sharebox{margin:40px auto 0;max-width:560px}
+.sharebox h3{margin:0 0 4px;font-family:var(--hand);font-size:32px;color:var(--chalk)}
+.sharelinks{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 14px;margin:14px 0 0}
+.sharelinks a{font-family:var(--hand);font-size:22px;color:var(--chalk);text-decoration:none;border-bottom:2px solid rgba(241,234,216,.35);padding:2px 4px}
+.pad{margin:30px auto 0;max-width:560px}
+.pad p{margin:0 0 8px;font-family:var(--hand);font-size:24px;color:var(--dim)}
+.padwrap{position:relative;border-radius:14px;border:2px dashed rgba(241,234,216,.28);background:rgba(0,0,0,.12);touch-action:none}
+#chalkpad{display:block;width:100%;height:200px;cursor:crosshair}
+.padhint{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;font-family:var(--hand);font-size:26px;color:rgba(241,234,216,.32);transition:opacity .3s}
+.padbtns{display:flex;justify-content:center;gap:12px;margin-top:12px}
+
+/* ledge + footer */
+.ledge{position:relative;height:22px;margin:0;background:linear-gradient(180deg,#7a5130,#4b2f1a);box-shadow:0 -4px 12px rgba(0,0,0,.35)}
+.ledge i{position:absolute;top:-9px;height:10px;border-radius:4px;background:linear-gradient(180deg,#fbf6ea,#d9d1bd)}
+.ledge i:nth-child(1){left:18%;width:46px;transform:rotate(-3deg)}
+.ledge i:nth-child(2){left:23%;width:26px;background:linear-gradient(180deg,#f6dd9a,#cfae5d)}
+.ledge i:nth-child(3){right:20%;width:38px;transform:rotate(4deg)}
+footer{background:#10201a;padding:28px 0 calc(var(--fw) + 28px);color:var(--dim);font-size:15px}
+footer .wrap{display:grid;gap:12px}
+footer nav{display:flex;flex-wrap:wrap;gap:8px 22px}
+footer a{color:var(--cream)}
+footer .wm{font-family:var(--disp);font-style:italic;font-weight:800;font-size:22px;color:var(--gold)}
+footer p{margin:0}
+
+/* desktop */
+@media (min-width:900px){
+  .top{padding-top:calc(var(--fw) + 22px)}
+  .wordmark{font-size:34px}
+  .hero{padding:24px 0 70px}
+  .hero .wrap{grid-template-columns:1.12fr .88fr;column-gap:60px;align-items:center;min-height:calc(100vh - 140px)}
+  .hero .copy{grid-column:1}
+  .hero-shot{grid-column:2;grid-row:1;margin-top:0;width:min(100%,360px);--r:3deg}
+  .lede{font-size:20px}
+  .hero-arrow{right:-70px;bottom:auto;top:-6px;transform:rotate(-38deg) scale(1.05)}
+  .menu{padding:80px 0 60px}
+  .items{grid-template-columns:1fr 1fr;column-gap:70px;row-gap:90px}
+  .item.textonly{grid-column:1/-1;grid-template-columns:140px minmax(0,640px);justify-content:center;align-items:center;column-gap:30px}
+  .textonly .cam{width:140px;height:116px}
+  .item.wide{grid-column:1/-1;grid-template-columns:1fr 1fr;align-items:center;column-gap:70px}
+  .item.wide .text{order:2}
+  .item h3{font-size:40px}
+  .item p{font-size:18px}
+  .notes{grid-template-columns:repeat(3,1fr);gap:40px}
+  .note{grid-template-columns:1fr;gap:6px}
+  .note svg{width:96px;height:96px}
+  .steps{grid-template-columns:1fr auto 1fr auto 1fr;align-items:start;gap:16px}
+  .step{grid-template-columns:1fr;justify-items:start}
+  .step-arrow{transform:rotate(-90deg);margin:22px 0 0}
+  .rulebox{padding:46px 56px 40px}
+  .rulebox h2{font-size:48px}
+}
+@media (min-width:1200px){ .hero .wrap{column-gap:90px} }
+
+@media (prefers-reduced-motion:reduce){
+  .js [data-draw] path,.js [data-draw] circle,.js [data-draw] ellipse,.js [data-draw] line{stroke-dashoffset:0;transition:none}
+  .close.in .bell .swing{animation:none}
+  .badge,.sharebtn{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="frame" aria-hidden="true"></div>
+<i class="screw a" aria-hidden="true"></i><i class="screw b" aria-hidden="true"></i><i class="screw c" aria-hidden="true"></i><i class="screw d" aria-hidden="true"></i>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="smear" x="-10%" y="-40%" width="120%" height="180%"><feGaussianBlur stdDeviation="2.2"/></filter>
+    <filter id="haze" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="9"/></filter>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="wordmark" href="#top" id="top">Last Orders<small>The Snug</small></a>
+    <a class="toplink" href="#download">Get the app</a>
+  </div>
+</header>
+
+<main>
+<!-- HERO: the headline writes itself, then the landlord wipes a line and rewrites it -->
+<section class="hero smudge" aria-labelledby="h1">
+  <div class="wrap">
+    <div class="copy">
+      <p class="kicker">For one private group of mates</p>
+      <h1 id="h1" class="vh">Tonight's specials: your mates, in real time.</h1>
+      <svg id="headline" class="write chalk" viewBox="0 0 400 250" aria-hidden="true">
+        <text class="c-gold" x="4" y="38" font-size="40" font-weight="700">Tonight's Specials:</text>
+        <text class="c-cream" x="0" y="128" font-size="86" font-weight="700">your mates,</text>
+        <text class="c-cream" x="0" y="218" font-size="86" font-weight="700">in real time.</text>
+      </svg>
+      <p class="lede">One live board for your lot. Everyone logs what they're having, <b>wherever they are</b>, and you're all looking at the same night.</p>
+      <div class="cta-row">
+        <a class="badge" href="#download"><!-- [LINK TBC: App Store URL goes here, app id 6803027948 pending approval] -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="#fff" stroke-width="1.6"/><path d="M8 16l4-8 4 8M9.5 13h5" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span><span class="s">Download on the</span><span class="b">App Store</span></span></a>
+        <button class="sharebtn" type="button" data-share>Tell your mates</button>
+      </div>
+      <div class="wipe-wrap">
+        <div class="wipe-stage"><svg id="wipe" class="chalk" viewBox="0 0 540 72" aria-hidden="true"></svg><svg id="wipe-fx" viewBox="0 0 540 72" aria-hidden="true"></svg></div>
+        <p class="vh" id="wipe-text" aria-live="polite">Ollie moved away. Rubbed out. Ollie's still on the board.</p>
+        <div class="landlord-sign"><span>- the landlord</span><button class="again" type="button" id="again" disabled>Rub it out</button></div>
+        <svg class="hero-arrow doodle" id="hero-arrow" viewBox="0 0 64 64" data-draw data-manual aria-hidden="true"><path class="g" pathLength="1" d="M6 6 C 30 8, 48 22, 52 52"/><path class="g" pathLength="1" style="--d:.45s;--t:.25s" d="M40 44 L52 54 L58 40"/></svg>
+      </div>
+    </div>
+    <figure class="pin tape hero-shot" id="hero-shot">
+      <img src="img/tonight.webp" width="760" height="854" alt="The Tonight board in Last Orders: Sam, Ched, Ollie, Mads and Aaron, each with what they're drinking, live." fetchpriority="high">
+      <svg class="over doodle" id="ollie-ring" viewBox="0 0 760 854" preserveAspectRatio="none" data-draw data-manual aria-hidden="true"><path class="a" pathLength="1" style="stroke-width:5;--t:.8s" d=""/></svg>
+    </figure>
+  </div>
+</section>
+
+<!-- MENU BOARD -->
+<section class="menu smudge flip" id="menu" aria-labelledby="menu-h">
+  <div class="wrap">
+    <div class="menu-title">
+      <svg class="stars doodle" viewBox="0 0 200 30" data-draw aria-hidden="true">
+        <path class="g" pathLength="1" d="M20 15 H70"/><path class="g" pathLength="1" style="--d:.2s" d="M130 15 H180"/>
+        <path pathLength="1" style="--d:.35s" d="M100 3 L103 12 L112 15 L103 18 L100 27 L97 18 L88 15 L97 12 Z"/>
+      </svg>
+      <h2 id="menu-h" class="sec-head"><span class="vh">On the board</span>
+        <svg class="write chalk" data-write viewBox="0 0 400 70" aria-hidden="true"><text class="c-cream" x="200" y="54" text-anchor="middle" font-size="62" font-weight="700">On the board</text></svg>
+      </h2>
+      <p class="sub">Six things your pub gets. All real, all in the app. Screens below are from the app with made-up mates.</p>
+    </div>
+    <ol class="items">
+      <li class="item textonly">
+        <svg class="doodle chalk cam" viewBox="0 0 120 100" data-draw aria-hidden="true">
+          <path pathLength="1" d="M14 34 H40 L48 22 H72 L80 34 H106 V84 H14 Z"/>
+          <circle pathLength="1" class="g" style="--d:.4s" cx="60" cy="58" r="17"/>
+          <circle pathLength="1" class="thin" style="--d:.7s" cx="60" cy="58" r="7"/>
+          <path pathLength="1" class="a thin" style="--d:.9s" d="M92 22 L96 12 M100 26 L110 20 M88 18 L86 8"/>
+        </svg>
+        <div class="text">
+          <h3><span class="nm">The live board</span><span class="ld" aria-hidden="true"></span><span class="sv">served live</span></h3>
+          <p>Tonight's board, shared. Snap your drink and the app names it. Everyone in your pub sees the same night, wherever they're sat.</p>
+          <p class="hand pinned-up"><a href="#hero-shot">It's the one pinned up top, with Ollie circled.</a></p>
+        </div>
+      </li>
+      <li class="item">
+        <div class="text">
+          <h3><span class="nm">Memories</span><span class="ld" aria-hidden="true"></span><span class="sv">the good ones, kept</span></h3>
+          <p>A scrapbook of the nights worth keeping: who was there, and what was new to you.</p>
+        </div>
+        <figure class="pin tape fade">
+          <img src="img/memories.webp" width="760" height="1383" loading="lazy" alt="The Memories scrapbook: polaroids of past nights with the mates who were there.">
+        </figure>
+      </li>
+      <li class="item">
+        <div class="text">
+          <h3><span class="nm">The World</span><span class="ld" aria-hidden="true"></span><span class="sv">served worldwide</span></h3>
+          <p>Every country your group has shared a drink in, on a globe you can spin. Each one gets a stamp in the Passport.</p>
+        </div>
+        <figure class="pin fade" data-frame>
+          <img src="img/world.webp" width="760" height="1178" loading="lazy" alt="Your world tour: a globe with six countries lit up, and Passport stamps below.">
+        </figure>
+      </li>
+      <li class="item wide">
+        <div class="text">
+          <h3><span class="nm">My Pub</span><span class="ld" aria-hidden="true"></span><span class="sv">served by the day</span></h3>
+          <p>A beer-mat dial of your days. The more mates were there, the brighter the day glows. Press one and that night develops like a polaroid. Tap the middle for a fact.</p>
+          <p class="hand" style="font-size:22px;color:var(--dim);margin-top:10px">That's the real thing playing, frame by frame.</p>
+        </div>
+        <figure class="pin tack seqbox">
+          <div class="seq" id="seq" role="img" aria-label="My Pub in the app: the day dial opens, a night develops as a polaroid, then the centre flips to a fact.">
+            <img src="img/mp-f03b.webp" width="600" height="846" alt="" class="on" data-k="f03b">
+          </div>
+          <p class="seqcap" id="seqcap" aria-hidden="true">...and that night develops.</p>
+        </figure>
+      </li>
+      <li class="item">
+        <div class="text">
+          <h3><span class="nm">The cap wall</span><span class="ld" aria-hidden="true"></span><span class="sv">one per brand</span></h3>
+          <p>Name the drink and its bottle cap goes on your wall. A little record of what your lot have tried.</p>
+        </div>
+        <figure class="pin tape fade">
+          <img src="img/caps.webp" width="760" height="896" loading="lazy" alt="The cap collection: a wooden wall of bottle caps, one per brand.">
+        </figure>
+      </li>
+      <li class="item">
+        <div class="text">
+          <h3><span class="nm">The Damage Report</span><span class="ld" aria-hidden="true"></span><span class="sv">served the morning after</span></h3>
+          <p>The landlord writes up the night in short, dry lines. Who turned up, and who might need a check-in.</p>
+        </div>
+        <figure class="pin tack fade">
+          <img src="img/damage.webp" width="760" height="530" loading="lazy" alt="The Damage Report: the landlord's verdict on the night, written in his dry voice.">
+        </figure>
+      </li>
+    </ol>
+    <p class="also">Also on the board: <span>a Lock Screen card for the night</span>, and a landlord who says it in one line.</p>
+  </div>
+</section>
+
+<!-- STORY -->
+<section class="story smudge" aria-labelledby="story-h">
+  <div class="wrap">
+    <h2 id="story-h" class="sec-head"><span class="vh">Why your lot will want it</span>
+      <svg class="write chalk" data-write viewBox="0 0 560 70" aria-hidden="true"><text class="c-cream" x="2" y="54" font-size="60" font-weight="700">Why your lot will want it</text></svg>
+    </h2>
+    <p class="sub">Built for the ones who go out together, and the ones who moved away.</p>
+    <div class="notes">
+      <div class="note">
+        <svg class="doodle chalk" viewBox="0 0 100 100" data-draw aria-hidden="true">
+          <circle pathLength="1" cx="50" cy="50" r="38"/>
+          <ellipse pathLength="1" style="--d:.35s" cx="50" cy="50" rx="16" ry="38"/>
+          <path pathLength="1" style="--d:.55s" d="M13 50 H87"/>
+          <path pathLength="1" class="thin" style="--d:.7s" d="M20 30 Q50 38 80 30 M20 70 Q50 62 80 70"/>
+          <path pathLength="1" class="a" style="--d:.9s" d="M62 22 q6 -10 12 0 q-6 10 -6 16 q0 -6 -6 -16 z"/>
+        </svg>
+        <div><h3>Moved away? Still on the board.</h3><p>Different cities, same night. Everyone logs what they're having and the whole group sees it, live.</p></div>
+      </div>
+      <div class="note">
+        <svg class="doodle chalk" viewBox="0 0 100 100" data-draw aria-hidden="true">
+          <path pathLength="1" d="M18 30 L44 30 L41 86 Q41 90 37 90 L25 90 Q21 90 21 86 Z"/>
+          <path pathLength="1" class="g" style="--d:.3s" d="M16 31 q3 -9 9 -4 q4 -8 10 -2 q6 -6 10 4"/>
+          <path pathLength="1" style="--d:.4s" d="M56 30 L82 30 L79 86 Q79 90 75 90 L63 90 Q59 90 59 86 Z"/>
+          <path pathLength="1" class="g" style="--d:.7s" d="M54 31 q3 -9 9 -4 q4 -8 10 -2 q6 -6 10 4"/>
+          <path pathLength="1" class="g thin" style="--d:.9s" d="M46 14 L50 6 M50 18 L58 12 M42 18 L38 10"/>
+        </svg>
+        <div><h3>The night writes itself down.</h3><p>Who came, what was new, where you were. Kept in Memories and on the World map, not in anyone's head.</p></div>
+      </div>
+      <div class="note">
+        <svg class="doodle chalk" viewBox="0 0 100 100" data-draw aria-hidden="true">
+          <path pathLength="1" d="M24 40 H70 V64 Q70 84 47 84 Q24 84 24 64 Z"/>
+          <path pathLength="1" style="--d:.35s" d="M70 46 Q84 46 84 56 Q84 66 70 64"/>
+          <path pathLength="1" class="d thin" style="--d:.55s" d="M38 30 q-5 -7 0 -13 M48 30 q-5 -7 0 -13 M58 30 q-5 -7 0 -13"/>
+          <path pathLength="1" class="a" style="--d:.8s" d="M47 70 q-9 -6 -9 -11 q0 -5 5 -5 q3 0 4 3 q1 -3 4 -3 q5 0 5 5 q0 5 -9 11 z"/>
+        </svg>
+        <div><h3>The morning after, someone checks in.</h3><p>The Damage Report shows who might need a text. A brew and a "you alright?" goes a long way.</p></div>
+      </div>
+    </div>
+    <div class="tally-box" id="tally-box">
+      <p class="hand">Who's on the board tonight:</p>
+      <svg id="tally" class="doodle chalk" viewBox="0 0 420 150" data-draw aria-label="A chalk tally: Sam, Ched, Ollie, Mads and Aaron. Five of you." role="img">
+        <path pathLength="1" style="--d:.1s;--t:.3s" d="M120 18 L118 98"/>
+        <path pathLength="1" style="--d:.55s;--t:.3s" d="M162 16 L161 100"/>
+        <path pathLength="1" style="--d:1s;--t:.3s" d="M204 18 L205 99"/>
+        <path pathLength="1" style="--d:1.45s;--t:.3s" d="M246 15 L244 100"/>
+        <path pathLength="1" class="g" style="--d:1.95s;--t:.35s;stroke-width:3.2" d="M98 86 L272 30"/>
+        <text class="c-dim" x="119" y="132" font-size="22" text-anchor="middle">Sam</text>
+        <text class="c-dim" x="162" y="142" font-size="22" text-anchor="middle">Ched</text>
+        <text class="c-dim" x="205" y="132" font-size="22" text-anchor="middle">Ollie</text>
+        <text class="c-dim" x="246" y="142" font-size="22" text-anchor="middle">Mads</text>
+        <text class="c-gold" x="312" y="36" font-size="24">Aaron</text>
+      </svg>
+      <p class="tally-out">All five of you. Wherever you are.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW TO JOIN -->
+<section class="join smudge flip" aria-labelledby="join-h">
+  <div class="wrap">
+    <h2 id="join-h" class="sec-head"><span class="vh">Getting in</span>
+      <svg class="write chalk" data-write viewBox="0 0 320 70" aria-hidden="true"><text class="c-cream" x="2" y="54" font-size="60" font-weight="700">Getting in</text></svg>
+    </h2>
+    <p class="sub">Three steps. No forms.</p>
+    <ol class="steps">
+      <li class="step"><div class="num"><svg class="doodle chalk ring" viewBox="0 0 76 76" data-draw aria-hidden="true"><path class="g" pathLength="1" d=""/></svg>1</div><div><h3>Get the app.</h3><p>iPhone, from the App Store.</p></div></li>
+      <li aria-hidden="true"><svg class="step-arrow doodle chalk" viewBox="0 0 40 42" data-draw><path pathLength="1" d="M20 2 Q16 20 20 36"/><path pathLength="1" style="--d:.4s;--t:.2s" d="M12 28 L20 38 L28 28"/></svg></li>
+      <li class="step"><div class="num"><svg class="doodle chalk ring" viewBox="0 0 76 76" data-draw aria-hidden="true"><path class="g" pathLength="1" style="--d:.3s" d=""/></svg>2</div><div><h3>Pick a nickname.</h3><p>And an avatar. That's your whole profile.</p></div></li>
+      <li aria-hidden="true"><svg class="step-arrow doodle chalk" viewBox="0 0 40 42" data-draw><path pathLength="1" style="--d:.4s" d="M20 2 Q24 20 20 36"/><path pathLength="1" style="--d:.8s;--t:.2s" d="M12 28 L20 38 L28 28"/></svg></li>
+      <li class="step"><div class="num"><svg class="doodle chalk ring" viewBox="0 0 76 76" data-draw aria-hidden="true"><path class="g" pathLength="1" style="--d:.6s" d=""/></svg>3</div><div><h3>Enter the pub code.</h3><p>Your mate sends it. You're in.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- HOUSE RULES (privacy) -->
+<section class="rules smudge" aria-labelledby="rules-h">
+  <div class="wrap">
+    <div class="rulebox" id="rulebox">
+      <svg class="frm doodle chalk" data-draw aria-hidden="true"><path pathLength="1" style="--t:1.4s" d=""/></svg>
+      <h2 id="rules-h" class="chalk">House rules</h2>
+      <ul>
+        <li>No accounts. No email. No passwords.</li>
+        <li>No public feed. Nothing is discoverable.</li>
+        <li class="ok">Private to your group. Nobody gets in without the pub code.</li>
+        <li class="ok">Works offline. It catches up when you're back in signal.</li>
+      </ul>
+      <p class="sig">- the landlord</p>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSE -->
+<section class="close smudge flip" id="download" aria-labelledby="close-h">
+  <div class="wrap">
+    <svg class="bell doodle chalk" viewBox="0 0 100 100" data-draw aria-hidden="true">
+      <path pathLength="1" class="g" d="M50 4 V14"/>
+      <g class="swing">
+        <path pathLength="1" style="--d:.15s;--t:.9s" d="M28 70 Q27 30 50 22 Q73 30 72 70 L80 78 L20 78 Z"/>
+        <circle pathLength="1" class="g" style="--d:.8s;--t:.3s" cx="50" cy="86" r="6"/>
+      </g>
+      <path pathLength="1" class="g thin" style="--d:1s;--t:.3s" d="M12 40 L4 36 M10 54 L2 56 M88 40 L96 36 M90 54 L98 56"/>
+    </svg>
+    <h2 id="close-h" class="sec-head"><span class="vh">Last orders, please.</span>
+      <svg class="write chalk" data-write viewBox="0 0 460 80" aria-hidden="true"><text class="c-cream" x="230" y="60" text-anchor="middle" font-size="68" font-weight="700">Last orders, please.</text></svg>
+    </h2>
+    <p class="sub">Get your lot on the board.</p>
+    <div class="cta-row">
+      <a class="badge" href="#download"><!-- [LINK TBC: App Store URL goes here, app id 6803027948 pending approval] -->
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="#fff" stroke-width="1.6"/><path d="M8 16l4-8 4 8M9.5 13h5" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span><span class="s">Download on the</span><span class="b">App Store</span></span></a>
+    </div>
+    <p class="soon">Coming soon to the App Store for iPhone.</p>
+
+    <div class="sharebox">
+      <h3>Send this to your mates</h3>
+      <p class="sub" style="margin:0 auto;text-align:center">It only works if your lot are on it.</p>
+      <div class="cta-row"><button class="sharebtn" type="button" data-share>Send it to the group</button></div>
+      <div class="sharelinks">
+        <a id="wa" href="https://wa.me/?text=" target="_blank" rel="noopener">WhatsApp</a>
+        <a id="sms" href="sms:?&amp;body=">Text</a>
+        <a id="mail" href="mailto:?subject=Last%20Orders&amp;body=">Email</a>
+      </div>
+    </div>
+
+    <div class="pad">
+      <p id="pad-l">Or chalk them something first:</p>
+      <div class="padwrap">
+        <canvas id="chalkpad" aria-labelledby="pad-l" role="img"></canvas>
+        <div class="padhint" id="padhint">draw on the board</div>
+      </div>
+      <div class="padbtns">
+        <button class="again" type="button" id="pad-wipe">Wipe it</button>
+        <button class="again" type="button" id="pad-send">Send the drawing</button>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="ledge" aria-hidden="true"><i></i><i></i><i></i></div>
+<footer>
+  <div class="wrap">
+    <span class="wm">Last Orders</span>
+    <nav aria-label="Legal">
+      <a href="https://james-crisford.github.io/last-orders-legal/privacy-policy.html">Privacy policy</a>
+      <a href="https://james-crisford.github.io/last-orders-legal/support.html">Support</a>
+    </nav>
+    <p>For adults of legal drinking age (18+ in the UK). Please drink responsibly.</p>
+    <p>Made in the UK.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+var NS = 'http://www.w3.org/2000/svg';
+var uid = 0;
+var SLOW = 1; try { SLOW = Math.max(1, +(new URLSearchParams(location.search).get('slow')) || 1); } catch (e){} // ?slow=N is only for capturing frames
+function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms * SLOW); }); }
+function mk(tag, attrs, parent){ var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function defsOf(svg){ var d = svg.querySelector('defs'); if (!d){ d = mk('defs', {}); svg.insertBefore(d, svg.firstChild); } return d; }
+function tween(dur, fn, ease){ dur *= SLOW; ease = ease || function(t){ return t; }; return new Promise(function(res){ var t0 = performance.now(); function f(now){ var t = Math.min(1, (now - t0) / dur); fn(ease(t)); if (t < 1) requestAnimationFrame(f); else res(); } requestAnimationFrame(f); }); }
+var easeIO = function(t){ return t < .5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2; };
+function rng(seed){ return function(){ seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
+var fontsReady = Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(function(r){ setTimeout(r, 2200); })]);
+
+/* fit an svg's viewBox snugly round its text so any font fits */
+function fitBox(svg, pad){
+  var ts = svg.querySelectorAll('text'); if (!ts.length) return;
+  var x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  ts.forEach(function(t){ var b = t.getBBox(); x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height); });
+  pad = pad || 6;
+  svg.setAttribute('viewBox', [x0 - pad, y0 - pad, (x1 - x0) + pad*2, (y1 - y0) + pad*2].map(function(n){ return n.toFixed(1); }).join(' '));
+}
+
+/* chalk stick that follows the writing */
+function nibFor(svg, h){
+  var g = mk('g', {'class':'nib', 'pointer-events':'none'}, svg);
+  var s = h / 60;
+  var inner = mk('g', {transform:'scale(' + s.toFixed(3) + ') rotate(28)'}, g);
+  mk('rect', {x:-3.5, y:-36, width:8, height:36, rx:2.5, fill:'#f4eedd'}, inner);
+  mk('rect', {x:-3.5, y:-36, width:8, height:8, rx:2.5, fill:'#d8cfb8'}, inner);
+  mk('circle', {cx:.5, cy:0, r:3, fill:'#fff', opacity:.7}, inner);
+  return g;
+}
+
+/* the write-on: a zigzag mask stroke drawn left to right across each line */
+function prepWrite(text){
+  var svg = text.ownerSVGElement, b = text.getBBox();
+  var s = Math.max(3, b.height * .2), pad = b.height * .16;
+  var T = b.y - pad, B = b.y + b.height + pad, up = false;
+  var d = 'M' + (b.x - s).toFixed(1) + ' ' + T.toFixed(1);
+  for (var x = b.x - s/2; x <= b.x + b.width + s; x += s/2){ d += ' L' + x.toFixed(1) + ' ' + (up ? T : B).toFixed(1); up = !up; }
+  var m = mk('mask', {id:'wm' + (++uid), maskUnits:'userSpaceOnUse', x:b.x - b.height*2, y:T - b.height*2, width:b.width + b.height*6, height:(B - T) + b.height*4}, defsOf(svg));
+  var p = mk('path', {d:d, fill:'none', stroke:'#fff', 'stroke-width':(s*1.25).toFixed(1), 'stroke-linecap':'round', 'stroke-linejoin':'round'}, m);
+  var L = p.getTotalLength();
+  p.style.strokeDasharray = L; p.style.strokeDashoffset = L;
+  text.setAttribute('mask', 'url(#' + m.id + ')');
+  return {p:p, L:L, m:m, b:b};
+}
+function write(text, dur, withNib){
+  if (RM){ text.style.visibility = 'visible'; return Promise.resolve(); }
+  var w = prepWrite(text), svg = text.ownerSVGElement;
+  text.style.visibility = 'visible';
+  var nib = withNib ? nibFor(svg, w.b.height) : null, mid = w.b.y + w.b.height * .55;
+  return tween(dur, function(t){
+    w.p.style.strokeDashoffset = (w.L * (1 - t)).toFixed(1);
+    if (nib){ var pt = w.p.getPointAtLength(w.L * t); nib.setAttribute('transform', 'translate(' + pt.x.toFixed(1) + ' ' + (mid + (pt.y - mid) * .3).toFixed(1) + ')'); }
+  }).then(function(){ if (nib) nib.remove(); });
+}
+
+/* ---------- the landlord's duster ---------- */
+function makeDuster(svg){
+  var g = mk('g', {'class':'duster', 'pointer-events':'none', style:'display:none'}, svg);
+  var inner = mk('g', {}, g);
+  mk('rect', {x:-64, y:-30, width:128, height:34, rx:8, fill:'#7b4c2a'}, inner);
+  mk('path', {d:'M-56 -21 H40 M-58 -12 H52 M-50 -4 H30', stroke:'#5c3820', 'stroke-width':2, fill:'none', 'stroke-linecap':'round'}, inner);
+  mk('rect', {x:-14, y:-24, width:28, height:12, rx:2, fill:'#c89b4a'}, inner);
+  mk('rect', {x:-62, y:2, width:124, height:18, rx:4, fill:'#cbc4b3'}, inner);
+  mk('rect', {x:-62, y:13, width:124, height:7, rx:3, fill:'#efe9da'}, inner);
+  return {g:g, inner:inner};
+}
+function dust(svg, x, y, h){
+  if (Math.random() > .5) return;
+  var c = mk('circle', {cx:x.toFixed(1), cy:y.toFixed(1), r:(h * (.03 + Math.random()*.05)).toFixed(1), fill:'#f1ead8', opacity:.55}, svg);
+  var dx = (Math.random() - .5) * h, dy = h * (.6 + Math.random());
+  if (c.animate){ c.animate([{transform:'translate(0,0)', opacity:.55}, {transform:'translate(' + dx + 'px,' + dy + 'px)', opacity:0}], {duration:900 + Math.random()*500, easing:'ease-out'}).onfinish = function(){ c.remove(); }; }
+  else setTimeout(function(){ c.remove(); }, 900);
+}
+function wipeOut(text, duster){
+  var svg = text.ownerSVGElement, b = text.getBBox(), h = b.height;
+  var fs = +text.getAttribute('font-size'), base = +text.getAttribute('y');
+  var cy = (fs && base) ? base - fs * .3 : b.y + h * .55, x0 = b.x - h * .3, x1 = b.x + b.width + h * .3;
+  var r = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal, sc = r.width / vb.width;
+  var far = vb.x + (window.innerWidth - r.left) / sc + h * 2.5;
+  var d = 'M' + far + ' ' + (cy - h*1.4) + ' L' + x1 + ' ' + cy + ' L' + x0 + ' ' + (cy + h*.14) + ' L' + x1 + ' ' + (cy - h*.12) + ' L' + x0 + ' ' + (cy + h*.06) + ' L' + (x1 - h) + ' ' + cy + ' L' + far + ' ' + (cy - h*1.6);
+  var mId = (text.getAttribute('mask') || '').replace(/^url\(#|\)$/g, '');
+  var m = document.getElementById(mId);
+  if (!m){ var w = prepWrite(text); w.p.style.strokeDashoffset = 0; m = w.m; }
+  var wp = mk('path', {d:d, fill:'none', stroke:'#000', 'stroke-width':(h*1.55).toFixed(1), 'stroke-linecap':'round', 'stroke-linejoin':'round'}, m);
+  var L = wp.getTotalLength(); wp.style.strokeDasharray = L; wp.style.strokeDashoffset = L;
+  // what chalk leaves behind: a blurred ghost and a haze
+  var ghost = text.cloneNode(true); ghost.removeAttribute('mask'); ghost.removeAttribute('id');
+  ghost.setAttribute('class', 'ghost c-cream'); ghost.setAttribute('filter', 'url(#smear)'); ghost.setAttribute('transform', 'translate(' + (h*.08).toFixed(1) + ' 1)'); ghost.style.opacity = 0;
+  svg.insertBefore(ghost, text);
+  var haze = mk('ellipse', {'class':'ghost', cx:((x0 + x1)/2).toFixed(1), cy:cy.toFixed(1), rx:((x1 - x0)/2).toFixed(1), ry:(h*.45).toFixed(1), fill:'#f1ead8', filter:'url(#haze)', opacity:0});
+  svg.insertBefore(haze, ghost);
+  var ghosts = svg.querySelectorAll('.ghost'); for (var i = 0; i < ghosts.length - 4; i++) ghosts[i].remove();
+  duster.g.style.display = '';
+  var s = h / 34, lastX = null;
+  return tween(1700, function(t){
+    wp.style.strokeDashoffset = (L * (1 - t)).toFixed(1);
+    var pt = wp.getPointAtLength(L * t);
+    var tilt = lastX === null ? -8 : (pt.x < lastX ? -10 : -4);
+    lastX = pt.x;
+    duster.g.setAttribute('transform', 'translate(' + pt.x.toFixed(1) + ' ' + (pt.y - 11*s).toFixed(1) + ') rotate(' + tilt + ') scale(' + s.toFixed(3) + ')');
+    if (t > .12 && t < .9){ dust(fxSvg, pt.x, pt.y + h*.2, h); ghost.style.opacity = Math.min(.16, (t - .12) * .5); haze.setAttribute('opacity', Math.min(.07, (t - .12) * .2).toFixed(3)); }
+  }, easeIO).then(function(){ duster.g.style.display = 'none'; text.remove(); });
+}
+
+/* ---------- hero sequence ---------- */
+var pairs = [
+  ["Ollie moved away.", "Ollie's still on the board."],
+  ["Everyone's in a different city.", "Same night. Same board."],
+  ["Rough morning?", "Check on your mates."],
+  ["Who was there that night?", "Memories kept the lot."]
+];
+var wipeSvg = document.getElementById('wipe'), fxSvg = document.getElementById('wipe-fx');
+var wipeLive = document.getElementById('wipe-text');
+var againBtn = document.getElementById('again');
+var duster = null, current = null, pairIx = 0;
+function lineText(str, cls){ var t = mk('text', {'class':cls || 'c-cream', x:4, y:52, 'font-size':46, 'font-weight':700}, wipeSvg); t.textContent = str; return t; }
+
+function roughEllipse(cx, cy, rx, ry, seed, turns){
+  var r = rng(seed), d = '', n = 46, st = -2.4 + r()*.4; turns = turns || 1.12;
+  for (var i = 0; i <= n; i++){ var a = st + i/n * turns * 6.2832, k = 1 + (r() - .5) * .05 + (i/n) * .06; d += (i ? ' L' : 'M') + (cx + Math.cos(a)*rx*k).toFixed(1) + ' ' + (cy + Math.sin(a)*ry*k).toFixed(1); }
+  return d;
+}
+function roughRect(w, h, seed, j){
+  var r = rng(seed), J = function(){ return (r() - .5) * j; }, pts = [[0,0],[w,0],[w,h],[0,h]], d = '';
+  for (var i = 0; i < 4; i++){ var a = pts[i], b = pts[(i+1)%4], ox = (b[0]-a[0]) * .03, oy = (b[1]-a[1]) * .03;
+    d += 'M' + (a[0] - ox + J()).toFixed(1) + ' ' + (a[1] - oy + J()).toFixed(1) + ' Q' + ((a[0]+b[0])/2 + J()).toFixed(1) + ' ' + ((a[1]+b[1])/2 + J()).toFixed(1) + ' ' + (b[0] + ox + J()).toFixed(1) + ' ' + (b[1] + oy + J()).toFixed(1) + ' '; }
+  return d;
+}
+// Ollie's row in the Tonight screenshot (760 x 854 image space)
+document.querySelector('#ollie-ring path').setAttribute('d', roughEllipse(205, 548, 168, 56, 7, 1.15));
+
+async function heroRun(){
+  await fontsReady;
+  var hl = document.getElementById('headline');
+  fitBox(hl, 4);
+  // fit the wipe line box to its longest line, then clear
+  var probe = pairs.reduce(function(a, p){ return a.concat(p); }, []).map(function(s){ return lineText(s); });
+  fitBox(wipeSvg, 8); var vb = wipeSvg.viewBox.baseVal; wipeSvg.setAttribute('viewBox', [vb.x, vb.y - 4, vb.width + 30, vb.height + 8].join(' '));
+  probe.forEach(function(t){ t.remove(); });
+  fxSvg.setAttribute('viewBox', wipeSvg.getAttribute('viewBox'));
+  duster = makeDuster(fxSvg);
+  var ts = hl.querySelectorAll('text');
+  if (RM){
+    ts.forEach(function(t){ t.style.visibility = 'visible'; });
+    var g = lineText(pairs[0][0]); g.setAttribute('class', 'ghost c-cream'); g.setAttribute('filter', 'url(#smear)'); g.style.opacity = .14; g.setAttribute('transform', 'translate(3 1)');
+    current = lineText(pairs[0][1], 'c-gold'); wipeLive.textContent = pairs[0][1];
+    document.getElementById('hero-arrow').classList.add('in'); document.getElementById('ollie-ring').classList.add('in');
+    againBtn.disabled = false; return;
+  }
+  await sleep(250);
+  await write(ts[0], 650, true);
+  await write(ts[1], 820, true);
+  await write(ts[2], 820, true);
+  await sleep(450);
+  await runPair(0);
+  againBtn.disabled = false;
+}
+async function runPair(i){
+  var p = pairs[i];
+  var a = lineText(p[0]); wipeLive.textContent = p[0];
+  await write(a, 780, true);
+  await sleep(1150);
+  await wipeOut(a, duster);
+  var bb = lineText(p[1], 'c-gold');
+  await write(bb, 900, true);
+  wipeLive.textContent = p[1];
+  current = bb;
+  if (i === 0){ document.getElementById('hero-arrow').classList.add('in'); document.getElementById('ollie-ring').classList.add('in'); }
+}
+againBtn.addEventListener('click', async function(){
+  if (againBtn.disabled) return;
+  againBtn.disabled = true;
+  document.getElementById('hero-arrow').classList.remove('in'); document.getElementById('ollie-ring').classList.remove('in');
+  pairIx = (pairIx + 1) % pairs.length;
+  if (RM){ wipeSvg.querySelectorAll('text').forEach(function(t){ t.remove(); }); current = lineText(pairs[pairIx][1], 'c-gold'); wipeLive.textContent = pairs[pairIx][1]; if (pairIx === 0){ document.getElementById('hero-arrow').classList.add('in'); document.getElementById('ollie-ring').classList.add('in'); } againBtn.disabled = false; return; }
+  if (current) await wipeOut(current, duster);
+  await runPair(pairIx);
+  againBtn.disabled = false;
+});
+heroRun();
+
+/* ---------- generated rough shapes ---------- */
+document.querySelectorAll('.step .ring path').forEach(function(p, i){ p.setAttribute('d', roughEllipse(38, 38, 31, 29, 11 + i*5, 1.18)); });
+function sizeFrames(){
+  var rb = document.getElementById('rulebox'), f = rb.querySelector('svg.frm'), w = rb.offsetWidth, h = rb.offsetHeight;
+  f.setAttribute('viewBox', '0 0 ' + w + ' ' + h); f.querySelector('path').setAttribute('d', roughRect(w, h, 3, 10) + roughRect(w - 10, h - 10, 9, 8).replace(/(-?\d+\.?\d*) (-?\d+\.?\d*)/g, function(m, x, y){ return (+x + 5).toFixed(1) + ' ' + (+y + 5).toFixed(1); }));
+  document.querySelectorAll('.pin[data-frame]').forEach(function(pin, i){
+    var s = pin.querySelector('svg.frm');
+    if (!s){ s = mk('svg', {'class':'frm doodle chalk', 'data-draw':'', 'aria-hidden':'true'}); mk('path', {pathLength:1, 'class':'g', style:'--t:1.1s;--d:.2s'}, s); pin.appendChild(s); io.observe(s); }
+    var W = pin.offsetWidth + 28, H = pin.offsetHeight + 28;
+    s.setAttribute('viewBox', '0 0 ' + W + ' ' + H); s.querySelector('path').setAttribute('d', roughRect(W, H, 21 + i*4, 9));
+  });
+}
+
+/* ---------- reveal on view ---------- */
+var io = new IntersectionObserver(function(es){
+  es.forEach(function(e){
+    if (!e.isIntersecting) return;
+    var t = e.target; io.unobserve(t);
+    t.classList.add('in');
+    if (t.hasAttribute('data-write')){ fontsReady.then(function(){ fitHead(t); var txt = t.querySelectorAll('text'), p = Promise.resolve(); txt.forEach(function(x){ p = p.then(function(){ return write(x, 900, true); }); }); }); }
+  });
+}, {threshold:.35, rootMargin:'0px 0px -8% 0px'});
+document.querySelectorAll('[data-draw]:not([data-manual]),[data-write],.close,#tally-box').forEach(function(n){ io.observe(n); });
+function fitHead(s){ fitBox(s, 6); var k = innerWidth >= 900 ? 1.05 : .8; s.style.maxWidth = Math.round(s.viewBox.baseVal.width * k) + 'px'; }
+fontsReady.then(function(){ document.querySelectorAll('svg[data-write]').forEach(fitHead); sizeFrames(); });
+var rto; window.addEventListener('resize', function(){ clearTimeout(rto); rto = setTimeout(sizeFrames, 150); });
+document.querySelectorAll('.pin img').forEach(function(im){ if (!im.complete) im.addEventListener('load', function(){ clearTimeout(rto); rto = setTimeout(sizeFrames, 100); }); });
+
+/* ---------- My Pub frame sequence (real app frames) ---------- */
+var seqEl = document.getElementById('seq'), cap = document.getElementById('seqcap');
+var seq = [['f02a',90,'Your days, round a beer mat.'],['f02b',90],['f02c',90],['f02d',450],['f01',1300],
+  ['f03a',160,'Press a day...'],['f03b',2300,'...and that night develops.'],['f01',800,'Tap the middle...'],['f07a',120],['f07b',120],['f07c',120],['f08',2300,'...for a fact.']];
+if (!RM){
+  var imgs = {}; var first = seqEl.querySelector('img'); imgs.f03b = first;
+  seq.forEach(function(s){ if (!imgs[s[0]]){ var im = new Image(); im.src = 'img/mp-' + s[0] + '.webp'; im.alt = ''; im.width = 600; im.height = 846; im.decoding = 'async'; seqEl.appendChild(im); imgs[s[0]] = im; } });
+  var ix = 0, timer = null, visible = false;
+  function step(){
+    var s = seq[ix];
+    Object.keys(imgs).forEach(function(k){ imgs[k].classList.toggle('on', k === s[0]); });
+    if (s[2]) cap.textContent = s[2];
+    ix = (ix + 1) % seq.length;
+    timer = setTimeout(function(){ if (visible) step(); else timer = null; }, s[1]);
+  }
+  new IntersectionObserver(function(es){ visible = es[0].isIntersecting; if (visible && !timer) step(); }, {threshold:.3}).observe(seqEl);
+}
+
+/* ---------- share ---------- */
+var shareText = "Found the app for our lot: Last Orders. One live board for the group, wherever we are. Get it, pick a nickname, and I'll send you the pub code.";
+function pageUrl(){ return /^https?:/.test(location.href) ? location.href.split('#')[0] : ''; }
+var full = shareText + (pageUrl() ? ' ' + pageUrl() : '');
+document.getElementById('wa').href = 'https://wa.me/?text=' + encodeURIComponent(full);
+document.getElementById('sms').href = 'sms:?&body=' + encodeURIComponent(full);
+document.getElementById('mail').href = 'mailto:?subject=' + encodeURIComponent('Last Orders') + '&body=' + encodeURIComponent(full);
+function share(files){
+  var data = {title:'Last Orders', text:shareText}; if (pageUrl()) data.url = pageUrl();
+  if (files && navigator.canShare && navigator.canShare({files:files})) data.files = files;
+  if (navigator.share) return navigator.share(data).catch(function(){});
+  window.open('https://wa.me/?text=' + encodeURIComponent(full), '_blank', 'noopener');
+}
+document.querySelectorAll('[data-share]').forEach(function(b){ b.addEventListener('click', function(){ share(); }); });
+
+/* ---------- chalk pad ---------- */
+var cv = document.getElementById('chalkpad'), cx = cv.getContext('2d'), hint = document.getElementById('padhint'), drawing = false, last = null, drew = false;
+function sizePad(){ var r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1); var img = drew ? cx.getImageData(0, 0, cv.width, cv.height) : null; cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); cx.setTransform(dpr, 0, 0, dpr, 0, 0); if (img) cx.putImageData(img, 0, 0); }
+sizePad(); window.addEventListener('resize', function(){ if (!drew) sizePad(); });
+function chalkLine(a, b){
+  var dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy), n = Math.max(1, dist / 1.4);
+  for (var i = 0; i < n; i++){ var x = a.x + dx * i / n, y = a.y + dy * i / n;
+    for (var k = 0; k < 4; k++){ cx.fillStyle = 'rgba(241,234,216,' + (.25 + Math.random()*.5).toFixed(2) + ')'; cx.fillRect(x + (Math.random() - .5) * 6, y + (Math.random() - .5) * 6, 1.4, 1.4); } }
+}
+function pos(e){ var r = cv.getBoundingClientRect(); return {x:e.clientX - r.left, y:e.clientY - r.top}; }
+cv.addEventListener('pointerdown', function(e){ drawing = true; last = pos(e); cv.setPointerCapture(e.pointerId); hint.style.opacity = 0; drew = true; });
+cv.addEventListener('pointermove', function(e){ if (!drawing) return; var p = pos(e); chalkLine(last, p); last = p; });
+['pointerup','pointercancel','pointerleave'].forEach(function(ev){ cv.addEventListener(ev, function(){ drawing = false; }); });
+document.getElementById('pad-wipe').addEventListener('click', function(){
+  if (RM){ cx.clearRect(0, 0, cv.width, cv.height); hint.style.opacity = 1; drew = false; return; }
+  var r = cv.getBoundingClientRect(); tween(600, function(t){ cx.save(); cx.globalCompositeOperation = 'destination-out'; cx.fillStyle = 'rgba(0,0,0,.25)'; cx.fillRect(0, 0, r.width * t, r.height); cx.restore(); }).then(function(){ cx.clearRect(0, 0, cv.width, cv.height); hint.style.opacity = 1; drew = false; });
+});
+document.getElementById('pad-send').addEventListener('click', function(){
+  if (!drew || !cv.toBlob){ share(); return; }
+  var out = document.createElement('canvas'); out.width = cv.width; out.height = cv.height; var o = out.getContext('2d');
+  o.fillStyle = '#182a23'; o.fillRect(0, 0, out.width, out.height); o.drawImage(cv, 0, 0);
+  o.fillStyle = '#E7C86A'; o.font = 'italic 700 ' + Math.round(out.height * .1) + 'px Fraunces, Georgia, serif'; o.fillText('Last Orders', out.height * .06, out.height * .93);
+  out.toBlob(function(bl){ try { share([new File([bl], 'last-orders-chalk.png', {type:'image/png'})]); } catch (err){ share(); } }, 'image/png');
+});
+})();
+</script>
+</body>
+</html>
