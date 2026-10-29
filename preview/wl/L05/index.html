@@ -220,7 +220,7 @@ p{margin:0 0 14px}
 .beats .phone img{border-radius:20px 20px 0 0}
 .beats .pc h3{font-size:clamp(25px,6.4vw,32px)}
 @media (min-width:860px){
-  .postcards{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px;align-items:stretch;max-width:860px;margin:0 auto}
+  .postcards{grid-template-columns:repeat(3,minmax(0,1fr));gap:30px;align-items:stretch}
   .beats .pc,.beats .pc.flip{grid-template-rows:1fr auto}
   .beats .pc .phones{align-self:end}
   .beats .pc,.beats .pc.flip{grid-template-columns:1fr;gap:10px;padding:24px 22px 0;text-align:center}
@@ -232,10 +232,95 @@ p{margin:0 0 14px}
   .beats .pc:nth-child(odd){transform:none}
 }
 
+/* every card shows a proper phone: bezel, notch, app screen */
+.beats .phone{position:relative;padding-top:34px}
+.beats .phone::before{content:"";position:absolute;top:11px;left:50%;width:54px;height:15px;margin-left:-27px;border-radius:9px;background:#050a08;z-index:2}
+.beats .phone .scr{aspect-ratio:640/724;overflow:hidden;border-radius:20px 20px 0 0;background:#12291f}
+.beats .phone .scr img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;border-radius:0}
+.scr.roul{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px;padding-top:34px;background:linear-gradient(180deg,#16322A,#0f241d)}
+.scr.roul .rt{font-family:var(--display);font-style:italic;font-weight:800;font-size:17px;color:var(--cream);letter-spacing:.01em}
+.scr.roul .wh{position:relative;width:78%}
+.scr.roul svg{width:100%;height:auto;display:block;filter:drop-shadow(0 6px 6px rgba(0,0,0,.5))}
+.scr.roul .ptr{position:absolute;top:-6px;left:50%;width:0;height:0;margin-left:-7px;border:7px solid transparent;border-top:12px solid var(--amber);border-bottom:0;filter:drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+.scr.roul .spinbtn{margin-top:4px;background:var(--amber);color:var(--ink);font-weight:800;font-size:13px;padding:6px 22px;border-radius:999px}
+/* caps card: a pile of real caps on the bar mat */
+.capsbox{width:min(240px,64vw);aspect-ratio:1.18;background:radial-gradient(120% 90% at 50% 30%,#1c3d33,#122923);border-radius:26px 26px 0 0;display:grid;grid-template-columns:repeat(3,1fr);align-content:center;justify-items:center;gap:6px 0;padding:14px 10px 0;
+  box-shadow:0 0 0 1.5px #2f3d37 inset,0 26px 40px -24px rgba(0,0,0,.7)}
+.capsbox img{width:92%;max-width:84px;height:auto;transform:rotate(var(--r,0deg));filter:drop-shadow(0 6px 5px rgba(0,0,0,.55))}
+.js .pc.rv .capsbox img{opacity:0;transform:translateY(-26px) scale(1.25) rotate(var(--r,0deg))}
+.js .pc.rv.in .capsbox img{opacity:1;transform:rotate(var(--r,0deg));transition:opacity .35s ease-out,transform .5s cubic-bezier(.3,1.4,.5,1);transition-delay:calc(var(--i,0)*.12s + .15s)}
+/* games card: a roulette wheel that spins to a stop */
+.wheelbox{position:relative;width:min(240px,64vw);aspect-ratio:1.18;background:radial-gradient(120% 90% at 50% 30%,#1c3d33,#122923);border-radius:26px 26px 0 0;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 0 1.5px #2f3d37 inset,0 26px 40px -24px rgba(0,0,0,.7);overflow:hidden}
+.wheelbox svg{width:84%;max-height:92%;height:auto;filter:drop-shadow(0 8px 8px rgba(0,0,0,.5))}
+.wheelbox .ptr{position:absolute;top:5px;left:50%;width:0;height:0;margin-left:-8px;border:8px solid transparent;border-top:14px solid var(--amber);border-bottom:0;filter:drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+#wheel g.spin{transform-origin:0 0}
+.js .pc.rv.in #wheel g.spin{animation:wheelspin 3.2s cubic-bezier(.12,.7,.15,1) .3s both}
+@keyframes wheelspin{from{transform:rotate(-1100deg)}to{transform:rotate(0deg)}}
+@media (prefers-reduced-motion:reduce){.js .pc.rv.in #wheel g.spin{animation:none}}
+/* world card: flat map, countries drop in amber */
+.beats .pc.map{grid-template-columns:minmax(0,1fr);gap:12px;padding:18px 16px 4px;text-align:center}
+.beats .pc.map .pc-text{padding:0 4px 22px;align-self:auto}
+.mapbox{position:relative;z-index:1;background:#12291f;border-radius:12px;box-shadow:0 0 0 1.5px #2f3d37 inset;aspect-ratio:2.5/1;overflow:hidden}
+.mapbox canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.drops{position:absolute;inset:0;pointer-events:none}
+.drop{position:absolute;transform:translate(-50%,-135%) scale(.6);opacity:0;background:var(--cream);color:var(--ink);font-family:var(--body);font-weight:700;font-size:11px;line-height:1;padding:5px 8px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 14px -4px rgba(0,0,0,.6);transition:opacity .25s,transform .35s cubic-bezier(.3,1.5,.5,1)}
+.drop::after{content:"";position:absolute;left:50%;bottom:-4px;width:8px;height:8px;background:inherit;transform:translateX(-50%) rotate(45deg)}
+.drop.on{opacity:1;transform:translate(-50%,-135%) scale(1)}
+@media (min-width:860px){
+  .beats .pc.map,.beats .pc.map:nth-child(odd){grid-column:1/-1;padding:22px 22px 4px}
+  .mapbox{max-width:760px;margin:0 auto;width:100%}
+  .drop{font-size:13px;padding:6px 10px}
+}
+
 /* ---------- close + waiting list ---------- */
 .close{text-align:center;padding:30px 0 80px;overflow:hidden}
-.close .mini{width:min(380px,84vw);margin:0 auto -14px;aspect-ratio:1;position:relative}
-.close .mini canvas{width:100%;height:100%;display:block}
+.appshow{display:flex;flex-direction:column;align-items:center;gap:14px;margin:0 auto 26px}
+.handset{position:relative;width:min(262px,70vw);aspect-ratio:9/18;background:#050a08;border-radius:42px;padding:9px;box-shadow:0 0 0 1.5px #3a4a43 inset,0 0 0 4px #0a1210,0 40px 70px -28px rgba(0,0,0,.9),0 0 90px -20px rgba(232,161,60,.38)}
+.handset .screen{width:100%;height:100%;border-radius:34px;overflow:hidden;background:#12291f}
+.handset img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;display:block;opacity:0;transition:opacity .7s ease}
+.handset img.on{opacity:1}
+.handset .screen{position:relative}
+/* lock screen */
+.handset .screen.lock{background:radial-gradient(120% 60% at 50% 105%,rgba(232,161,60,.38),transparent 62%),radial-gradient(90% 50% at 15% 10%,rgba(63,122,98,.45),transparent 60%),linear-gradient(180deg,#0b1a15,#143027 70%,#1d3d31);color:#fff;display:flex;flex-direction:column;padding:0 9px}
+.lk-top{text-align:center;padding-top:42px}
+.lk-date{font-size:12px;font-weight:600;color:rgba(255,255,255,.82)}
+.lk-time{font-family:var(--body);font-size:56px;font-weight:600;line-height:1;letter-spacing:-.02em;color:#fff;margin-top:1px}
+.lk-notes{position:relative;height:122px;margin-top:10px;overflow:hidden}
+.nt{position:absolute;left:0;right:0;display:flex;gap:7px;align-items:flex-start;background:rgba(255,255,255,.17);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-radius:14px;padding:7px 9px 8px;transition:transform .55s cubic-bezier(.2,.9,.25,1),opacity .45s;transform:translateY(-120%);opacity:0}
+.nt.in{transform:translateY(var(--y,0));opacity:1}
+.nt.out{transform:translateY(var(--y,0)) scale(.96);opacity:0}
+.nt .ico{flex:0 0 22px;width:22px;height:22px;border-radius:6px;background:#16322A;box-shadow:0 0 0 1px rgba(255,255,255,.18) inset;display:flex;align-items:center;justify-content:center;font-size:12px}
+.nt .tx{min-width:0;flex:1;text-align:left}
+.nt .hd{display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:#fff}
+.nt .hd span{font-weight:500;color:rgba(255,255,255,.65)}
+.nt .bd{font-size:11px;line-height:1.25;color:rgba(255,255,255,.92);margin-top:1px}
+.lk-la{margin-top:auto;margin-bottom:8px;background:rgba(0,0,0,.34);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-radius:20px;padding:9px 10px 8px;border:1px solid rgba(255,255,255,.1)}
+.la-top{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-size:9.5px;white-space:nowrap}
+.la-top b{color:#EAA23F;letter-spacing:.16em;font-size:9px;font-weight:800}
+.la-top span{color:#b9c9c0;overflow:hidden;text-overflow:ellipsis}
+.la-row{display:flex;gap:8px;align-items:flex-end;margin-top:6px}
+.la-pod{flex:1;display:flex;gap:4px;align-items:flex-end}
+.st{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.st .fc{display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(255,255,255,.16);font-size:13px;box-shadow:0 0 0 1.5px #5fa896}
+.st.s1 .fc{width:30px;height:30px;box-shadow:0 0 0 1.5px #EAA23F;font-size:15px}.st.s2 .fc,.st.s3 .fc{width:24px;height:24px}
+.st .bar{width:100%;display:flex;gap:3px;justify-content:center;align-items:baseline;border-radius:6px;background:rgba(255,255,255,.14);color:#f3e6c8;padding:2px 0}
+.st.s1 .bar{background:#EAA23F;color:#14251F;padding:7px 0}.st.s2 .bar{padding:4px 0}
+.st .bar em{font-style:normal;font-size:9px;font-weight:600}.st .bar b{font-size:11px;font-weight:800;transition:transform .3s}
+.st .bar b.pop{transform:scale(1.5)}
+.la-last{width:56px;display:flex;flex-direction:column;align-items:center;gap:1px;text-align:center}
+.la-last .lpic{width:44px;height:44px;border-radius:11px;background:linear-gradient(135deg,#3a1e2a,#7a3b50);display:flex;align-items:center;justify-content:center;font-size:22px}
+.la-last small{font-size:9px;font-weight:700;color:#f3e6c8}.la-last em{font-style:normal;font-size:8.5px;color:#b9c9c0;line-height:1.1}
+.la-btn{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:6px;background:#EAA23F;color:#14251F;font-weight:800;font-size:11px;border-radius:999px;padding:5px 0}
+.lk-bot{display:flex;justify-content:space-between;padding:0 6px;margin-bottom:6px}
+.lk-bot i{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.17)}
+.lk-home{align-self:center;width:84px;height:4px;border-radius:2px;background:rgba(255,255,255,.7);margin-bottom:7px}
+.handset .notch{position:absolute;top:17px;left:50%;width:74px;height:20px;margin-left:-37px;border-radius:12px;background:#050a08}
+.isapp{margin:6px 0 0;color:var(--cream);font-weight:600;font-size:18px}
+.stores{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.store{display:flex;flex-direction:column;align-items:flex-start;gap:1px;background:#050a08;border:1px solid #4a5a53;border-radius:11px;padding:7px 16px 8px;color:#fff;min-width:150px;text-align:left}
+.store small{font-size:10.5px;letter-spacing:.02em;color:#c9d6cf}
+.store b{font-size:19px;font-weight:600;line-height:1.1}
 .join{scroll-margin-top:16px;outline:none}
 .close h2{max-width:13ch;margin:0 auto}
 .wl{width:min(440px,100%);margin:22px auto 0;text-align:left;background:rgba(29,43,38,.78);border:1.5px solid var(--brass);border-radius:20px;padding:20px 18px 18px;
@@ -349,12 +434,20 @@ footer nav a{min-height:44px;display:inline-flex;align-items:center}
   <div class="wrap">
     <div class="postcards">
       <article class="pc rv" style="--rr:-2deg">
-        <div class="phones"><div class="phone"><img src="img/tonight.webp" width="640" height="724" loading="lazy" alt="The Tonight screen: a live board showing each mate's drinks tonight, so you can see who is drinking the most."></div></div>
+        <div class="phones"><div class="phone"><div class="scr"><img src="img/tonight.webp" width="640" height="724" loading="lazy" alt="The Tonight screen: a live board showing each mate's drinks tonight, so you can see who is drinking the most."></div></div></div>
         <div class="pc-text"><h3>Log your drinks and see who drinks the most.</h3></div>
       </article>
       <article class="pc flip rv" style="--rr:2deg">
-        <div class="phones"><div class="phone"><img src="img/passport.webp" width="640" height="700" loading="lazy" alt="The Passport screen: a stamp for each country and the drink had there."></div></div>
-        <div class="pc-text"><h3>Collect all the caps and bottles you have ever drunk and race around the world.</h3></div>
+        <div class="phones"><div class="phone"><div class="scr"><img src="img/shot-caps.webp" width="640" height="1387" loading="lazy" alt="The Last Orders cap collection: a wall of bottle caps, one for every brand you have drunk."></div></div></div>
+        <div class="pc-text"><h3>Collect all the caps and bottles.</h3></div>
+      </article>
+      <article class="pc rv" style="--rr:-1.5deg">
+        <div class="phones"><div class="phone"><div class="scr roul" role="img" aria-label="Drink Roulette in the app: a wheel of drinks that spins to land on one."><b class="rt">Drink Roulette</b><div class="wh"><svg id="wheel" viewBox="-100 -100 200 200" aria-hidden="true"></svg><i class="ptr"></i></div><span class="spinbtn">Spin</span></div></div></div>
+        <div class="pc-text"><h3>Drink games, built in.</h3></div>
+      </article>
+      <article class="pc map rv" style="--rr:-1deg">
+        <div class="mapbox" id="mapbox"><canvas id="worldmap" role="img" aria-label="A map of the world. Countries light up amber one by one as drinks are logged there."></canvas><div class="drops" id="drops" aria-hidden="true"></div></div>
+        <div class="pc-text"><h3>Race around the world.</h3></div>
       </article>
     </div>
   </div>
@@ -362,7 +455,28 @@ footer nav a{min-height:44px;display:inline-flex;align-items:center}
 
 <section class="close" aria-labelledby="dl-h">
   <div class="wrap">
-    <div class="mini"><canvas id="mini" role="img" aria-label="The globe again, with all four mates lit up and joined by arcs."></canvas></div>
+    <div class="appshow">
+      <div class="handset"><div class="screen lock" id="screen" role="img" aria-label="An iPhone lock screen: Last Orders notifications arriving, and the Last Orders Live Activity showing who has had the most drinks tonight.">
+  <div class="lk-top"><div class="lk-date">Friday 30 October</div><div class="lk-time">21:41</div></div>
+  <div class="lk-notes" id="lknotes" aria-hidden="true"></div>
+  <div class="lk-la" aria-hidden="true">
+    <div class="la-top"><b id="laTag">LAST ORDERS</b><span id="laOut">2h 14m out &middot; 5.5 units</span></div>
+    <div class="la-row">
+      <div class="la-pod">
+        <div class="st s2"><span class="fc">&#128526;</span><div class="bar"><em>Ollie</em><b id="n-ollie">3</b></div></div>
+        <div class="st s1"><span class="fc">&#129506;</span><div class="bar"><em>Sam</em><b id="n-sam">4</b></div></div>
+        <div class="st s3"><span class="fc">&#127863;</span><div class="bar"><em>Mads</em><b id="n-mads">2</b></div></div>
+      </div>
+      <div class="la-last"><span class="lpic" id="laPic">&#127863;</span><small id="laWho">Mads</small><em id="laWhat">Sauv Blanc</em></div>
+    </div>
+    <div class="la-btn"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg> Log</div>
+  </div>
+  <div class="lk-bot" aria-hidden="true"><i></i><i></i></div>
+  <div class="lk-home" aria-hidden="true"></div>
+</div><i class="notch" aria-hidden="true"></i></div>
+      <p class="isapp">Last Orders is an iPhone app.</p>
+      <div class="stores"><span class="store"><small>Coming soon to the</small><b>App Store</b></span><span class="store"><small>Coming soon to</small><b>Google Play</b></span></div>
+    </div>
     <div class="join" id="join" tabindex="-1">
       <h2 id="dl-h">Get on the list.</h2>
       <form class="wl" id="wl" novalidate>
@@ -882,8 +996,9 @@ function finishNow(){
   paintClocks(BASE + 18*60000);
 }
 
-var mini = new Globe(document.getElementById('mini'), {interactive:true, rRatio:0.36, spin:7});
-mini.lam = 30; mini.phi = 22;
+var miniEl = document.getElementById('mini');
+var mini = miniEl ? new Globe(miniEl, {interactive:true, rRatio:0.36, spin:7}) : null;
+if (mini){ mini.lam = 30; mini.phi = 22; }
 
 var last = performance.now();
 function frame(now){
@@ -910,8 +1025,8 @@ function frame(now){
     hero.step(t, now, dt, null);
   }
   if ((hero.visible && !RM) || hero.dirty){ hero.render(t, now); hero.dirty = false; }
-  mini.step(t, now, dt, null);
-  if ((mini.visible && !RM) || mini.dirty){ mini.render(t, now); mini.dirty = false; }
+  if (mini){ mini.step(t, now, dt, null);
+  if ((mini.visible && !RM) || mini.dirty){ mini.render(t, now); mini.dirty = false; } }
   requestAnimationFrame(frame);
 }
 if (RM){ finishNow(); }
@@ -1030,6 +1145,141 @@ document.querySelectorAll('[data-tell]').forEach(function(b){
     } else if (selectionCopy()){ done(); }
   });
 });
+})();
+</script>
+<script>
+(function(){
+  var cv = document.getElementById('worldmap'), box = document.getElementById('mapbox'), drops = document.getElementById('drops');
+  if (!cv || !window.LO_WORLD || !LO_WORLD.f) return;
+  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var LAT0 = 84, LAT1 = -58, byCode = {};
+  LO_WORLD.f.forEach(function(f){ byCode[f[0]] = f[1]; });
+  var TOUR = [['GB','United Kingdom'],['PT','Portugal'],['ES','Spain'],['FR','France'],['IE','Ireland'],['DE','Germany'],['IT','Italy'],['GR','Greece'],['US','United States'],['MX','Mexico'],['BR','Brazil'],['AR','Argentina'],['ZA','South Africa'],['EG','Egypt'],['IN','India'],['TH','Thailand'],['JP','Japan'],['AU','Australia'],['NZ','New Zealand']].filter(function(t){ return byCode[t[0]]; });
+  var W = 0, H = 0, ctx = cv.getContext('2d'), lit = {}, order = [], pos = 0, timer = 0, running = false;
+  function xy(lo, la){ return [(lo + 180) / 360 * W, (LAT0 - la) / (LAT0 - LAT1) * H]; }
+  function ringPath(r){
+    // a ring that jumps across the date line starts a new piece instead of drawing a line across the map
+    for (var k = 0; k < r.length; k += 2){
+      var q = xy(r[k]/10, r[k+1]/10);
+      if (k && Math.abs(r[k] - r[k-2]) < 1800) ctx.lineTo(q[0], q[1]); else ctx.moveTo(q[0], q[1]);
+    }
+    if (Math.abs(r[0] - r[r.length-2]) < 1800) ctx.closePath();
+  }
+  function paint(){
+    ctx.clearRect(0, 0, W, H);
+    ctx.lineJoin = 'round';
+    ctx.fillStyle = '#3f7a62'; ctx.strokeStyle = 'rgba(190,225,205,.35)'; ctx.lineWidth = Math.max(.5, W / 900);
+    LO_WORLD.f.forEach(function(f){ if (lit[f[0]]) return; ctx.beginPath(); f[1].forEach(ringPath); ctx.fill(); ctx.stroke(); });
+    LO_WORLD.f.forEach(function(f){
+      var a = lit[f[0]]; if (!a) return;
+      ctx.globalAlpha = a; ctx.beginPath(); f[1].forEach(ringPath);
+      ctx.fillStyle = '#E8A13C'; ctx.fill(); ctx.strokeStyle = 'rgba(255,240,205,.95)'; ctx.lineWidth = Math.max(1, W / 520); ctx.stroke(); ctx.globalAlpha = 1;
+    });
+  }
+  function size(){
+    var r = box.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1);
+    W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
+    cv.width = Math.round(W * d); cv.height = Math.round(H * d); ctx.setTransform(d, 0, 0, d, 0, 0); paint();
+  }
+  function anchor(code){
+    var rs = byCode[code], best = rs[0];
+    rs.forEach(function(r){ if (r.length > best.length) best = r; });
+    var x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+    for (var k = 0; k < best.length; k += 2){ x0 = Math.min(x0, best[k]); x1 = Math.max(x1, best[k]); y0 = Math.min(y0, best[k+1]); y1 = Math.max(y1, best[k+1]); }
+    return [(x0 + x1) / 20, (y0 + y1) / 20];
+  }
+  function shuffle(a){ for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function fade(code, to, ms, done){
+    var t0 = performance.now(), from = lit[code] || 0;
+    (function tick(now){
+      var e = Math.min(1, (now - t0) / ms); lit[code] = from + (to - from) * e; if (!to && e >= 1) delete lit[code]; paint();
+      if (e < 1) requestAnimationFrame(tick); else if (done) done();
+    })(t0);
+  }
+  function pop(code, name){
+    var pt = anchor(code), q = xy(pt[0], pt[1]), d = document.createElement('div');
+    d.className = 'drop'; d.textContent = '\u{1F37B} ' + name; d.style.left = q[0] + 'px'; d.style.top = q[1] + 'px';
+    var x = q[0]; if (x < 60) d.style.left = '60px'; if (x > W - 60) d.style.left = (W - 60) + 'px';
+    drops.appendChild(d); requestAnimationFrame(function(){ requestAnimationFrame(function(){ d.classList.add('on'); }); });
+    setTimeout(function(){ d.classList.remove('on'); setTimeout(function(){ if (d.parentNode) d.parentNode.removeChild(d); }, 400); }, 2100);
+  }
+  function next(){
+    if (!running) return;
+    if (pos >= order.length){
+      // hold, then clear and go round again
+      timer = setTimeout(function(){
+        Object.keys(lit).forEach(function(c){ fade(c, 0, 700); });
+        timer = setTimeout(function(){ pos = 0; order = shuffle(TOUR.slice()).slice(0, 9); next(); }, 1200);
+      }, 3200);
+      return;
+    }
+    var t = order[pos++]; fade(t[0], 1, 450); pop(t[0], t[1]);
+    timer = setTimeout(next, 1250);
+  }
+  size(); window.addEventListener('resize', size);
+  if (RM){ TOUR.slice(0, 9).forEach(function(t){ lit[t[0]] = 1; }); paint(); return; }
+  order = shuffle(TOUR.slice()).slice(0, 9);
+  if ('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if (e.isIntersecting && !running){ running = true; next(); }
+        else if (!e.isIntersecting && running){ running = false; clearTimeout(timer); }
+      });
+    }, {threshold:.35}).observe(box);
+  } else { running = true; next(); }
+})();
+</script>
+<script>
+(function(){
+  var svg = document.getElementById('wheel'); if (!svg) return;
+  var E = ['\u{1F37A}','\u{1F377}','\u{1F943}','\u{1F378}','\u{1F379}','\u{1F37B}','\u{1F37E}','\u{1F942}','\u{1F378}','\u{1F37A}','\u{1F943}','\u{1F377}'];
+  var N = E.length, a = 2*Math.PI/N, R = 92, h = '<circle r="97" fill="#0a1210" stroke="#C89B4A" stroke-width="3"/><g class="spin">';
+  for (var i = 0; i < N; i++){
+    var a0 = i*a - Math.PI/2 - a/2, a1 = a0 + a, c = i % 2 ? '#2f6b57' : '#E8A13C';
+    h += '<path d="M0 0 L'+(R*Math.cos(a0)).toFixed(2)+' '+(R*Math.sin(a0)).toFixed(2)+' A'+R+' '+R+' 0 0 1 '+(R*Math.cos(a1)).toFixed(2)+' '+(R*Math.sin(a1)).toFixed(2)+' Z" fill="'+c+'" stroke="#0a1210" stroke-width="1.5"/>';
+    var am = a0 + a/2, deg = (am*180/Math.PI + 90);
+    h += '<text x="0" y="-66" font-size="19" text-anchor="middle" dominant-baseline="central" transform="rotate('+deg.toFixed(1)+') ">'+E[i]+'</text>';
+  }
+  h += '</g><circle r="9" fill="#0a1210" stroke="#C89B4A" stroke-width="2.5"/>';
+  svg.innerHTML = h;
+})();
+</script>
+<script>
+(function(){
+  var box = document.getElementById('lknotes'); if (!box) return;
+  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var MSG = [
+    {i:'\u{1F37A}', b:'Sam is out. A pint of Madri in London.', n:'sam', to:5, who:'Sam', what:'Madri'},
+    {i:'\u{1F377}', b:'Mads logged a Sauvignon Blanc in Lisbon.', n:'mads', to:3, who:'Mads', what:'Sauv Blanc'},
+    {i:'\u{1F378}', b:'Ollie has caught up with Sam.', n:'ollie', to:5, who:'Ollie', what:'G&T'},
+    {i:'\u{1F37B}', b:'Aaron is last man standing in Sydney.', n:null}
+  ];
+  var BASE = {sam:4, mads:2, ollie:3}, LASTWHO = document.getElementById('laWho'), LASTWHAT = document.getElementById('laWhat'), TAG = document.getElementById('laTag'), OUT = document.getElementById('laOut');
+  var step = 0, timer = 0, shown = [], mins = 134;
+  function setN(k, v, pop){ var e = document.getElementById('n-' + k); if (!e) return; e.textContent = v; if (pop){ e.classList.add('pop'); setTimeout(function(){ e.classList.remove('pop'); }, 350); } }
+  function resetCounts(){ Object.keys(BASE).forEach(function(k){ setN(k, BASE[k]); }); LASTWHO.textContent = 'Mads'; LASTWHAT.textContent = 'Sauv Blanc'; document.getElementById('laPic').textContent = '\u{1F377}'; TAG.textContent = 'LAST ORDERS'; }
+  function place(){ shown.forEach(function(n, i){ n.style.setProperty('--y', (i * 62) + 'px'); }); }
+  function add(m){
+    var n = document.createElement('div'); n.className = 'nt';
+    n.innerHTML = '<span class="ico">' + m.i + '</span><div class="tx"><div class="hd">Last Orders<span>now</span></div><div class="bd"></div></div>';
+    n.querySelector('.bd').textContent = m.b;
+    box.appendChild(n); shown.unshift(n);
+    if (shown.length > 2){ var old = shown.pop(); old.classList.remove('in'); old.classList.add('out'); setTimeout(function(){ if (old.parentNode) old.parentNode.removeChild(old); }, 600); }
+    place(); requestAnimationFrame(function(){ requestAnimationFrame(function(){ n.classList.add('in'); }); });
+    if (m.n){ setN(m.n, m.to, true); LASTWHO.textContent = m.who; LASTWHAT.textContent = m.what; document.getElementById('laPic').textContent = m.i; }
+    TAG.textContent = m.n ? 'LIVE' : 'LAST ORDERS';
+    mins += 3; OUT.innerHTML = Math.floor(mins/60) + 'h ' + (mins % 60) + 'm out &middot; ' + (5.5 + (step % 4) * .5).toFixed(1) + ' units';
+  }
+  function next(){
+    if (document.hidden){ timer = setTimeout(next, 1500); return; }
+    if (step >= MSG.length){
+      shown.forEach(function(n){ n.classList.remove('in'); n.classList.add('out'); });
+      timer = setTimeout(function(){ box.innerHTML = ''; shown = []; resetCounts(); mins = 134; step = 0; next(); }, 1600); return;
+    }
+    add(MSG[step++]); timer = setTimeout(next, step === MSG.length ? 4200 : 3000);
+  }
+  if (RM){ add(MSG[0]); return; }
+  timer = setTimeout(next, 900);
 })();
 </script>
 </body>
