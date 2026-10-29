@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Last Orders - join the waiting list</title>
-<meta name="description" content="Share a drink with your mates, no matter where they are in the world. Join the Last Orders waiting list.">
+<meta name="description" content="Share a night out, wherever you are in the world. Join the Last Orders waiting list.">
 <meta name="theme-color" content="#122A23">
 <script>document.documentElement.classList.add('js');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -140,6 +140,10 @@ h1 .hi{color:var(--amber)}
 .js .lockscr .ln.on{display:grid}
 .js .lockscr .ln.vis{opacity:1;transform:none}
 
+/* ---------- beats ---------- */
+.beats{padding:6px 22px 4px;text-align:center}
+.beats p{margin:0 auto 16px;max-width:24ch;font-family:var(--display);font-style:italic;font-weight:600;font-size:clamp(22px,6vw,28px);line-height:1.15;letter-spacing:-.01em;color:var(--cream)}
+
 /* ---------- waiting list ---------- */
 .join{margin:22px 12px 26px;padding:22px 18px 18px;border-radius:24px;background:radial-gradient(90% 80% at 100% 0%,rgba(232,161,60,.25),transparent 60%),var(--panel);border:1px solid rgba(200,155,74,.35);scroll-margin-top:76px}
 .fld{margin:0 0 14px}
@@ -215,7 +219,7 @@ footer p{margin:6px 0}
   <header class="intro" id="top">
     <a class="wm" href="#top"><img src="img/icon.webp" alt="" width="34" height="34">Last Orders</a>
     <div class="hero-body">
-      <h1>Share a drink with your mates, <span class="hi">no matter where they are in the world.</span></h1>
+      <h1>Share a night out, <span class="hi">wherever you are in the world.</span></h1>
       <div class="ctas">
         <a class="btn" href="#join">Join the waiting list</a>
         <span class="sub">iPhone - 18+</span>
@@ -260,6 +264,11 @@ footer p{margin:6px 0}
           </div>
         </div>
       </section>
+    </div>
+
+    <div class="beats">
+      <p>Find out who's always last out.</p>
+      <p>Collect the caps and corks from everywhere you've been.</p>
     </div>
 
     <!-- ===== WAITING LIST ===== -->
@@ -318,7 +327,7 @@ footer p{margin:6px 0}
    and the page says "Preview only: nothing is saved yet."
    SHARE: what the "Tell your mates" button shares. */
 const WAITLIST = { url: '', method: 'POST', nameField: 'name', phoneField: 'phone', extra: {} };
-const SHARE = { url: 'https://james-crisford.github.io/last-orders-legal/go/?s=friend', text: 'Share a drink with your mates, no matter where they are in the world. Last Orders:' };
+const SHARE = { url: 'https://james-crisford.github.io/last-orders-legal/go/?s=friend', text: 'Share a night out, wherever you are in the world. Last Orders:' };
 /* ================================================================ */
 
 /* Sends one lead. Resolves {preview:true} (and sends nothing) when WAITLIST.url is empty;
