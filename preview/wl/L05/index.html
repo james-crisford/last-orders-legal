@@ -258,6 +258,36 @@ p{margin:0 0 14px}
 .js .pc.rv.in #wheel g.spin{animation:wheelspin 3.2s cubic-bezier(.12,.7,.15,1) .3s both}
 @keyframes wheelspin{from{transform:rotate(-1100deg)}to{transform:rotate(0deg)}}
 @media (prefers-reduced-motion:reduce){.js .pc.rv.in #wheel g.spin{animation:none}}
+/* league card: the month, the year's crown, the group's total */
+.beats .pc.league{grid-template-columns:minmax(0,1fr);gap:14px;padding:18px 16px 4px;text-align:center}
+.beats .pc.league .pc-text{padding:0 4px 22px;align-self:auto}
+.lg-grid{position:relative;z-index:1;display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
+.lg-tile{background:#12291f;color:var(--cream);border-radius:14px;box-shadow:0 0 0 1.5px #2f3d37 inset;padding:14px 16px 16px;text-align:left;display:flex;flex-direction:column;gap:8px}
+.lg-tile h4{margin:0;font-family:var(--body);font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.lg-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.lg-list li{display:grid;grid-template-columns:20px 54px minmax(0,1fr) 26px;align-items:center;gap:8px;font-family:var(--chalk);font-size:21px;line-height:1}
+.lg-list .rk{font-size:14px;text-align:center}
+.lg-list .bar{height:9px;border-radius:5px;background:rgba(255,255,255,.09);overflow:hidden}
+.lg-list .bar i{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,#c97d1e,var(--amber));transition:width 1s cubic-bezier(.2,.8,.2,1)}
+.js .pc.rv.in .lg-list .bar i{width:var(--w)}
+.lg-list li.lead .bar i{background:linear-gradient(90deg,var(--amber),#ffe3a0)}
+.lg-list li.lead .nm{color:var(--gold)}
+.lg-list b{font-family:var(--body);font-size:14px;font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.lg-crown{align-items:center;text-align:center;justify-content:center}
+.lg-crown h4{align-self:flex-start}
+.lg-icon{font-size:56px;line-height:1;filter:drop-shadow(0 6px 10px rgba(232,161,60,.55))}
+.js .pc.rv.in .lg-icon{animation:crownin .9s cubic-bezier(.3,1.5,.5,1) .5s both}
+@keyframes crownin{from{transform:translateY(-30px) rotate(-14deg) scale(.5);opacity:0}to{transform:none;opacity:1}}
+.lg-name{font-family:var(--chalk);font-size:34px;line-height:1;color:var(--cream)}
+.lg-sub{font-size:13px;color:var(--dim)}
+.lg-count{font-family:var(--display);font-style:italic;font-weight:900;font-size:clamp(46px,9vw,64px);line-height:1;color:var(--amber);font-variant-numeric:tabular-nums;margin-top:6px}
+@media (min-width:860px){
+  .beats .pc.league,.beats .pc.league:nth-child(odd){grid-column:1/-1;padding:22px 22px 4px}
+  .lg-grid{grid-template-columns:1.25fr 1fr 1fr;gap:16px}
+  .lg-tile{min-height:196px}
+  .lg-count{margin-top:auto;margin-bottom:auto}
+}
+@media (prefers-reduced-motion:reduce){.lg-list .bar i{transition:none}.js .pc.rv.in .lg-icon{animation:none}}
 /* world card: flat map, countries drop in amber */
 .beats .pc.map{grid-template-columns:minmax(0,1fr);gap:12px;padding:18px 16px 4px;text-align:center}
 .beats .pc.map .pc-text{padding:0 4px 22px;align-self:auto}
@@ -445,6 +475,14 @@ footer nav a{min-height:44px;display:inline-flex;align-items:center}
         <div class="phones"><div class="phone"><div class="scr roul" role="img" aria-label="Drink Roulette in the app: a wheel of drinks that spins to land on one."><b class="rt">Drink Roulette</b><div class="wh"><svg id="wheel" viewBox="-100 -100 200 200" aria-hidden="true"></svg><i class="ptr"></i></div><span class="spinbtn">Spin</span></div></div></div>
         <div class="pc-text"><h3>Drink games, built in.</h3></div>
       </article>
+      <article class="pc league rv" style="--rr:1deg">
+        <div class="lg-grid">
+          <div class="lg-tile"><h4>October league</h4><ol class="lg-list"><li class="lead"><span class="rk">&#128081;</span><span class="nm">Sam</span><span class="bar"><i style="--w:100%"></i></span><b>31</b></li><li><span class="rk"></span><span class="nm">Ollie</span><span class="bar"><i style="--w:87%"></i></span><b>27</b></li><li><span class="rk"></span><span class="nm">Aaron</span><span class="bar"><i style="--w:71%"></i></span><b>22</b></li><li><span class="rk"></span><span class="nm">Mads</span><span class="bar"><i style="--w:61%"></i></span><b>19</b></li></ol></div>
+          <div class="lg-tile lg-crown"><h4>Drinker of the year</h4><div class="lg-icon" aria-hidden="true">&#128081;</div><div class="lg-name">Sam</div><div class="lg-sub">342 drinks</div></div>
+          <div class="lg-tile"><h4>The group's year</h4><div class="lg-count" id="lgcount" data-to="1284">1,284</div><div class="lg-sub">drinks, counted for you</div></div>
+        </div>
+        <div class="pc-text"><h3>Monthly leaderboards. A drinker of the year. Every drink counted.</h3></div>
+      </article>
       <article class="pc map rv" style="--rr:-1deg">
         <div class="mapbox" id="mapbox"><canvas id="worldmap" role="img" aria-label="A map of the world. Countries light up amber one by one as drinks are logged there."></canvas><div class="drops" id="drops" aria-hidden="true"></div></div>
         <div class="pc-text"><h3>Race around the world.</h3></div>
@@ -524,7 +562,9 @@ footer nav a{min-height:44px;display:inline-flex;align-items:center}
 <script>
 /* ============ CONFIG: edit these two blocks, nothing else needs touching ============ */
 /* Waiting list. While url is empty NOTHING is saved and the page says so ("Preview only"). */
-const WAITLIST = { url: '', method: 'POST', nameField: 'name', phoneField: 'phone', extra: {} };
+const WAITLIST = { url: 'https://lmpatjvdtswzoaxoisbt.supabase.co/functions/v1/waitlist-join', method: 'POST', nameField: 'name', phoneField: 'phone',
+  // where they came from: the sticker QR (qr), a friend's share link (friend) or neither (direct)
+  extra: { s: (new URLSearchParams(location.search).get('s') || 'direct').toLowerCase() } };
 /* "Tell your mates" share action */
 const SHARE = { url: 'https://james-crisford.github.io/last-orders-legal/go/?s=friend', text: 'Share a night out, wherever you are in the world. Last Orders:' };
 /* ====================================================================================== */
@@ -535,7 +575,7 @@ function submitLead(name, phone){
   Object.keys(WAITLIST.extra || {}).forEach(function(k){ body.set(k, WAITLIST.extra[k]); });
   return fetch(WAITLIST.url, {
     method: WAITLIST.method || 'POST',
-    mode: 'no-cors',
+    mode: 'cors',
     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
     body: body.toString()
   });
@@ -1280,6 +1320,25 @@ document.querySelectorAll('[data-tell]').forEach(function(b){
   }
   if (RM){ add(MSG[0]); return; }
   timer = setTimeout(next, 900);
+})();
+</script>
+<script>
+(function(){
+  var el = document.getElementById('lgcount'); if (!el) return;
+  var to = parseInt(el.getAttribute('data-to'), 10) || 0;
+  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (RM || !('IntersectionObserver' in window)) return;   // the final number is already in the page
+  var done = false;
+  new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if (!e.isIntersecting || done) return; done = true;
+      var t0 = performance.now(), D = 1700;
+      (function tick(now){
+        var k = Math.min(1, (now - t0) / D), v = Math.round(to * (1 - Math.pow(1 - k, 3)));
+        el.textContent = v.toLocaleString('en-GB'); if (k < 1) requestAnimationFrame(tick);
+      })(t0);
+    });
+  }, {threshold:.5}).observe(el);
 })();
 </script>
 </body>
