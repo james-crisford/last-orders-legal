@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Last Orders</title><meta name="robots" content="noindex">
-<!-- THE STICKER QR POINTS HERE. To change where every sticker goes, edit DEST below (one line) and push. -->
+<!-- THE STICKER QR POINTS HERE. iPhones go to STORE, every other phone to the waiting list (WAIT). To change where stickers go, edit those two and push. -->
+<!-- STORE uses the app id, not the name, so it survives the App Store name changing. -->
 <!-- SCAN COUNT: one beacon to the link-hit function saying only which link (qr/friend); nothing is stored on the phone. -->
-<script>var DEST="https://james-crisford.github.io/last-orders-legal/preview/wl/L05/";var q=new URLSearchParams(location.search).get("s")||"qr";try{navigator.sendBeacon("https://lmpatjvdtswzoaxoisbt.supabase.co/functions/v1/link-hit",JSON.stringify({s:q,page:"go"}))}catch(e){}location.replace(DEST+"?s="+encodeURIComponent(q));</script>
-<noscript><meta http-equiv="refresh" content="0;url=https://james-crisford.github.io/last-orders-legal/preview/wl/L05/?s=qr"></noscript>
+<script>var STORE="https://apps.apple.com/gb/app/id6803027948";var WAIT="https://james-crisford.github.io/last-orders-legal/preview/wl/L05/";var q=new URLSearchParams(location.search).get("s")||"qr";try{navigator.sendBeacon("https://lmpatjvdtswzoaxoisbt.supabase.co/functions/v1/link-hit",JSON.stringify({s:q,page:"go"}))}catch(e){}var ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);location.replace(ios?STORE:WAIT+"?s="+encodeURIComponent(q));</script>
+<noscript><meta http-equiv="refresh" content="0;url=https://apps.apple.com/gb/app/id6803027948"></noscript>
 </head><body style="font-family:system-ui;background:#0f3d2e;color:#fff;text-align:center;padding:3rem 1rem">
-<h1>Last Orders</h1><p><a style="color:#e8a33a" href="https://james-crisford.github.io/last-orders-legal/preview/wl/L05/?s=qr">Tap here if you are not taken straight there</a></p></body></html>
+<h1>Last Orders</h1><p><a style="color:#e8a33a" href="https://apps.apple.com/gb/app/id6803027948">Tap here if you are not taken straight there</a></p></body></html>
